@@ -312,9 +312,29 @@ a { color: inherit; }
 .sheet h2 { font-size: 1.2rem; letter-spacing: 0.14em; margin-bottom: 6px; color: var(--gold-hi); }
 .sheet p { color: var(--fg-soft); font-size: 0.9rem; margin-bottom: 14px; }
 .sheet img { display: block; width: 100%; height: auto; border-radius: 2px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7); background: var(--ivory); min-height: 120px; -webkit-touch-callout: default; user-select: auto; }
-.toast-box { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex; justify-content: center; pointer-events: none; padding: 0 16px calc(18px + env(safe-area-inset-bottom, 0px)); }
+.toast-box { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex; justify-content: center; pointer-events: none; padding: 0 16px calc(78px + env(safe-area-inset-bottom, 0px)); }
 #toast { background: rgba(10, 13, 20, 0.94); border: 1px solid var(--line); color: var(--fg); padding: 10px 20px; border-radius: 999px; font-size: 0.9rem; opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; }
 #toast.show { opacity: 1; transform: translateY(0); }
+
+
+/* ---------- Music ---------- */
+.music-btn {
+  position: fixed; z-index: 25; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: var(--gold-hi);
+  background: rgba(8, 11, 18, 0.72); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); -webkit-tap-highlight-color: transparent; transition: border-color 0.3s ease;
+}
+.music-btn:hover { border-color: var(--gold); }
+.music-btn svg { width: 20px; height: 20px; }
+.music-btn .bars { display: none; align-items: flex-end; gap: 3px; height: 16px; }
+.music-btn .bars i { display: block; width: 3px; height: 100%; border-radius: 2px; background: var(--gold-hi); transform-origin: bottom; animation: eq 1.1s ease-in-out infinite; }
+.music-btn .bars i:nth-child(2) { animation-delay: -0.35s; } .music-btn .bars i:nth-child(3) { animation-delay: -0.7s; } .music-btn .bars i:nth-child(4) { animation-delay: -0.2s; }
+.music-btn.on .bars { display: flex; }
+.music-btn.on svg { display: none; }
+.music-btn.loading { opacity: 0.6; }
+.music-btn.hint::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 1px solid var(--gold); animation: ping 2.4s ease-out infinite; }
+@keyframes eq { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+@keyframes ping { 0% { opacity: 0.8; transform: scale(0.9); } 100% { opacity: 0; transform: scale(1.4); } }
 
 /* ---------- Setup ---------- */
 .steps { margin: 26px 0 0; padding-left: 1.3em; color: var(--fg); display: grid; gap: 12px; }
@@ -508,6 +528,11 @@ a { color: inherit; }
     </div>
   </div>
 </div>
+<button type="button" id="musicBtn" class="music-btn hint" aria-label="播放背景音樂" aria-pressed="false">
+  <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M9 17.5V6.2l10-2.2v11.2"/><path d="M9 6.2l10-2.2v3L9 9.2z"/><circle cx="6.5" cy="17.5" r="2.6"/><circle cx="16.5" cy="15.2" r="2.6"/><path d="M9 6.2v11.3M19 4v11.2" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+  <span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+</button>
+<audio id="bgm" loop preload="none"></audio>
 <div class="toast-box"><div id="toast" role="status" aria-live="polite"></div></div>
 
 <script>
@@ -1120,6 +1145,179 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("shee
   init(); draw(0);
   addEventListener("resize", () => { init(); if (still) draw(0); });
   document.addEventListener("visibilitychange", () => { if (!document.hidden && !still) { last = performance.now(); requestAnimationFrame(draw); } });
+})();
+</script>
+<script>
+/* Background music: an original music-box arrangement of "Silent Night" (Gruber, 1818, public domain),
+   rendered in the browser, then looped through an <audio> element. */
+(() => {
+  const btn = document.getElementById("musicBtn");
+  const audio = document.getElementById("bgm");
+  if (!btn || !audio || !(window.OfflineAudioContext || window.webkitOfflineAudioContext)) { if (btn) btn.hidden = true; return; }
+  try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) { /* older browsers */ }
+  const getPref = () => { try { return localStorage.getItem("xmasMusic"); } catch (e) { return null; } };
+  const setPref = (v) => { try { localStorage.setItem("xmasMusic", v); } catch (e) { /* private mode */ } };
+
+  const EIGHTH = 0.44;
+  const MEL = [
+    [67,3],[69,1],[67,2],[64,6], [67,3],[69,1],[67,2],[64,6],
+    [74,4],[74,2],[71,6], [72,4],[72,2],[67,6],
+    [69,4],[69,2],[72,3],[71,1],[69,2], [67,3],[69,1],[67,2],[64,6],
+    [69,4],[69,2],[72,3],[71,1],[69,2], [67,3],[69,1],[67,2],[64,6],
+    [74,4],[74,2],[77,3],[74,1],[71,2], [72,6],[76,6],
+    [72,3],[67,1],[64,2],[67,3],[65,1],[62,2], [60,12],
+  ];
+  const CH = { C: [48, 52, 55], G7: [43, 47, 50, 53], F: [41, 45, 48] };
+  const BARS = ["C","C","C","C","G7","G7","C","C","F","F","C","C","F","F","C","C","G7","G7","C","C","C","G7","C","C"];
+  const hz = (n) => 440 * Math.pow(2, (n - 69) / 12);
+
+  function impulse(ctx, secs) {
+    const len = Math.floor(ctx.sampleRate * secs), b = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = b.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
+    return b;
+  }
+
+  async function render() {
+    const SR = 22050, L = BARS.length * 6 * EIGHTH, TAIL = 3;
+    const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    const ctx = new OAC(2, Math.ceil((L + TAIL) * SR), SR);
+    const master = ctx.createGain(); master.gain.value = 0.34;
+    const warm = ctx.createBiquadFilter(); warm.type = "lowpass"; warm.frequency.value = 5200; warm.Q.value = 0.4;
+    const verb = ctx.createConvolver(); verb.buffer = impulse(ctx, 2.2);
+    const wet = ctx.createGain(); wet.gain.value = 0.32;
+    const dry = ctx.createGain(); dry.gain.value = 0.85;
+    master.connect(warm); warm.connect(dry); warm.connect(verb); verb.connect(wet);
+    dry.connect(ctx.destination); wet.connect(ctx.destination);
+    const pan = (v) => { if (!ctx.createStereoPanner) return master; const p = ctx.createStereoPanner(); p.pan.value = v; p.connect(master); return p; };
+    const melBus = pan(0.12), arpBus = pan(-0.28), padBus = pan(0), bassBus = pan(0);
+    const padLp = ctx.createBiquadFilter(); padLp.type = "lowpass"; padLp.frequency.value = 760; padLp.connect(padBus);
+
+    function box(t, n, v, bus) {
+      const f = hz(n), out = ctx.createGain();
+      out.gain.setValueAtTime(0.0001, t); out.gain.exponentialRampToValueAtTime(v, t + 0.006); out.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
+      out.connect(bus);
+      [[1, 1, 2.4], [2, 0.3, 1.4], [4.2, 0.07, 0.25]].forEach(([m, a, d]) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.frequency.value = f * m; o.detune.value = (Math.random() - 0.5) * 6;
+        g.gain.setValueAtTime(a, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+        o.connect(g); g.connect(out); o.start(t); o.stop(t + d + 0.05);
+      });
+    }
+    function pad(t, notes, dur) {
+      notes.forEach((n) => {
+        [["triangle", 0, 0.05], ["sawtooth", 6, 0.016]].forEach(([type, det, a]) => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.type = type; o.frequency.value = hz(n + 12); o.detune.value = det;
+          g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(a, t + 0.9);
+          g.gain.setValueAtTime(a, t + dur); g.gain.linearRampToValueAtTime(0.0001, t + dur + 1.4);
+          o.connect(g); g.connect(padLp); o.start(t); o.stop(t + dur + 1.5);
+        });
+      });
+    }
+    function bass(t, n) {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = hz(n - 12);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.2, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + 3);
+      o.connect(g); g.connect(bassBus); o.start(t); o.stop(t + 3.1);
+    }
+
+    const bar = 6 * EIGHTH;
+    BARS.forEach((name, i) => {
+      const t = i * bar, c = CH[name];
+      pad(t, c.slice(0, 3), bar);
+      bass(t, c[0]);
+      const r = c[0] + 12, fifth = c[2] + 12, third = c[1] + 24;
+      [r, fifth, third, fifth, third, fifth].forEach((n, k) => box(t + k * EIGHTH + 0.01, n, k === 0 ? 0.07 : 0.05, arpBus));
+    });
+    let at = 0;
+    MEL.forEach(([n, len]) => { box(at + (Math.random() - 0.5) * 0.012, n + 12, 0.2, melBus); at += len * EIGHTH; });
+
+    const nb = ctx.createBuffer(2, Math.ceil((L + TAIL) * SR), SR);
+    for (let c = 0; c < 2; c++) {
+      const d = nb.getChannelData(c);
+      let hiss = 0;
+      for (let i = 0; i < d.length; i++) {
+        hiss = hiss * 0.96 + (Math.random() * 2 - 1) * 0.04;
+        d[i] = hiss * 0.05;
+        if (Math.random() < 0.00009) {
+          const amp = (0.05 + Math.random() * 0.2) * (Math.random() < 0.5 ? -1 : 1);
+          for (let k = 0; k < 24 && i + k < d.length; k++) d[i + k] += amp * Math.exp(-k / 4);
+        }
+      }
+    }
+    const crackle = ctx.createBufferSource(); crackle.buffer = nb;
+    const cf = ctx.createBiquadFilter(); cf.type = "bandpass"; cf.frequency.value = 2600; cf.Q.value = 0.6;
+    const cg = ctx.createGain(); cg.gain.value = 0.5;
+    crackle.connect(cf); cf.connect(cg); cg.connect(ctx.destination); crackle.start(0);
+
+    const buf = await new Promise((res, rej) => {
+      ctx.oncomplete = (e) => res(e.renderedBuffer);
+      const p = ctx.startRendering(); if (p && p.then) p.then(res, rej);
+    });
+    const n = Math.round(L * SR), tail = buf.length - n, chans = [buf.getChannelData(0), buf.getChannelData(1)];
+    for (const d of chans) for (let i = 0; i < tail; i++) d[i] += d[n + i];
+    let peak = 0;
+    for (const d of chans) for (let i = 0; i < n; i++) { const v = Math.abs(d[i]); if (v > peak) peak = v; }
+    const gain = peak > 0 ? 0.82 / peak : 1;
+    for (const d of chans) for (let i = 0; i < n; i++) d[i] *= gain;
+    return wav(chans, n, SR);
+  }
+
+  function wav(chans, n, sr) {
+    const out = new DataView(new ArrayBuffer(44 + n * 4));
+    const str = (o, t) => { for (let i = 0; i < t.length; i++) out.setUint8(o + i, t.charCodeAt(i)); };
+    str(0, "RIFF"); out.setUint32(4, 36 + n * 4, true); str(8, "WAVE"); str(12, "fmt ");
+    out.setUint32(16, 16, true); out.setUint16(20, 1, true); out.setUint16(22, 2, true); out.setUint32(24, sr, true);
+    out.setUint32(28, sr * 4, true); out.setUint16(32, 4, true); out.setUint16(34, 16, true); str(36, "data"); out.setUint32(40, n * 4, true);
+    let o = 44;
+    for (let i = 0; i < n; i++) for (let c = 0; c < 2; c++) {
+      const v = Math.max(-1, Math.min(1, chans[c][i]));
+      out.setInt16(o, v < 0 ? v * 0x8000 : v * 0x7fff, true); o += 2;
+    }
+    return new Blob([out], { type: "audio/wav" });
+  }
+
+  const SILENT = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+  let job = null, want = false, unlocked = false;
+  function prepare() {
+    if (!job) job = render().then((blob) => { audio.src = URL.createObjectURL(blob); audio.load(); }).catch(() => { btn.hidden = true; });
+    return job;
+  }
+  function ui() {
+    const on = want && !audio.paused;
+    btn.classList.toggle("on", on);
+    btn.classList.toggle("loading", want && audio.paused);
+    btn.setAttribute("aria-pressed", String(on));
+    btn.setAttribute("aria-label", on ? "暫停背景音樂" : "播放背景音樂");
+  }
+  function play() {
+    want = true; btn.classList.remove("hint");
+    if (!unlocked && !audio.src) { audio.src = SILENT; audio.play().catch(() => {}); }
+    unlocked = true;
+    ui();
+    prepare().then(() => { if (want) audio.play().catch(() => { want = false; ui(); }).then(ui); });
+  }
+  function stop() { want = false; audio.pause(); ui(); }
+  audio.addEventListener("playing", ui);
+  audio.addEventListener("pause", ui);
+
+  btn.addEventListener("click", () => {
+    if (want) { stop(); setPref("off"); } else { setPref("on"); play(); }
+  });
+  const first = (e) => {
+    document.removeEventListener("pointerdown", first, true);
+    document.removeEventListener("keydown", first, true);
+    if (e.target && e.target.closest && e.target.closest("#musicBtn")) return;
+    if (getPref() !== "off") play();
+  };
+  document.addEventListener("pointerdown", first, true);
+  document.addEventListener("keydown", first, true);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) audio.pause();
+    else if (want) audio.play().catch(() => {});
+  });
+  const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1200));
+  idle(() => prepare());
 })();
 </script>
 </body>
