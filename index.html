@@ -7,7 +7,7 @@
 <title>聖誕許願桌</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap">
 <style>
 :root {
   /* Concept: a night-time desk under a lamp. Home = two arched doors; wish = letter paper and pen; Santa = envelope flies in and lands on the desk. */
@@ -29,7 +29,7 @@
   --line: rgba(241, 234, 217, 0.2);
   --font-display: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
   --font-hand: "LXGW WenKai TC", "Kaiti TC", "BiauKai", "Noto Serif TC", serif;
-  --font-script: "Caveat", "Segoe Script", "Bradley Hand", cursive;
+  --font-script: "Pinyon Script", "Snell Roundhand", "Apple Chancery", "Segoe Script", cursive;
   --font-ui: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
 }
 
@@ -94,7 +94,7 @@ a { color: inherit; }
 
 /* ---------- Home ---------- */
 .hero { padding-top: 18px; text-align: left; }
-.eyebrow { font-family: var(--font-script); font-size: 1.7rem; font-weight: 500; color: var(--lamp); line-height: 1; }
+.eyebrow { font-family: var(--font-script); font-size: 1.9rem; font-weight: 400; color: var(--lamp); line-height: 1; }
 .hero h1 { font-size: clamp(2.4rem, 11vw, 3.6rem); font-weight: 900; letter-spacing: 0.04em; line-height: 1.15; margin-top: 6px; }
 .lead { color: var(--fg-soft); max-width: 30em; margin-top: 12px; text-wrap: pretty; }
 
@@ -118,7 +118,7 @@ a { color: inherit; }
   box-shadow: 0 0 36px rgba(207, 70, 80, 0.22);
 }
 .door svg { width: 56px; height: auto; flex: none; }
-.door-latin { font-family: var(--font-script); font-size: clamp(1.7rem, 8vw, 2.2rem); font-weight: 700; line-height: 1; }
+.door-latin { font-family: var(--font-script); font-size: clamp(1.8rem, 8.5vw, 2.5rem); font-weight: 400; line-height: 1.15; }
 .door-zh { font-size: 0.9rem; color: var(--fg-soft); letter-spacing: 0.12em; }
 .count { margin-top: 26px; color: var(--fg-soft); font-size: 0.92rem; text-align: center; min-height: 1.6em; }
 
@@ -139,7 +139,7 @@ a { color: inherit; }
 }
 .paper::before { top: 0; border-radius: 4px 4px 0 0; }
 .paper::after { bottom: 0; border-radius: 0 0 4px 4px; }
-.dear { font-family: var(--font-script); font-size: 2.4rem; font-weight: 700; color: var(--berry); line-height: 1.2; margin-bottom: 4px; }
+.dear { font-family: var(--font-script); font-size: 2.6rem; font-weight: 400; color: var(--berry); line-height: 1.2; margin-bottom: 4px; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
@@ -199,7 +199,7 @@ a { color: inherit; }
 /* ---------- Santa ---------- */
 .ask { margin-top: 6px; }
 .ask .paper { line-height: 1.8; }
-.ask h2 { font-family: var(--font-script); font-size: 2.8rem; font-weight: 700; color: var(--berry); line-height: 1.1; }
+.ask h2 { font-family: var(--font-script); font-size: 3rem; font-weight: 400; color: var(--berry); line-height: 1.1; }
 .ask label { display: block; font-weight: 700; margin-top: 10px; }
 .ask input[type="text"] {
   display: block; width: 100%; margin-top: 4px; font: inherit; font-size: 1.2rem; color: var(--ink); background: transparent;
@@ -259,7 +259,7 @@ a { color: inherit; }
 .reads .val { font-weight: 700; border-bottom: 2px solid rgba(168, 40, 47, 0.55); padding: 0 0.2em; overflow-wrap: anywhere; }
 .reads .val.blank { font-weight: 400; opacity: 0.6; border-bottom-style: dashed; }
 .reads .note-line { margin-top: 0.8rem; padding-top: 0.6rem; border-top: 1px dashed rgba(29, 43, 74, 0.3); overflow-wrap: anywhere; }
-.reads .sign { font-family: var(--font-script); font-size: 2rem; color: var(--berry); text-align: right; margin-top: 8px; line-height: 1.2; }
+.reads .sign { font-family: var(--font-script); font-size: 2.2rem; font-weight: 400; color: var(--berry); text-align: right; margin-top: 8px; line-height: 1.2; }
 
 /* ---------- Save sheet & toast ---------- */
 .sheet {
@@ -884,7 +884,7 @@ async function makePng(d) {
   if (d.note && String(d.note).trim()) lines.push({ pre: "備注：", val: String(d.note).trim(), suf: "", blank: false });
   const fam = '"LXGW WenKai TC","Kaiti TC","BiauKai","Noto Serif TC",serif';
   const f = (w, px) => w + " " + px + "px " + fam;
-  const script = '700 120px Caveat,"Segoe Script","Bradley Hand",cursive';
+  const script = '400 120px "Pinyon Script","Snell Roundhand","Apple Chancery",cursive';
   const sample = lines.map((l) => l.pre + l.val + l.suf).join("") + "Dear Santa, Merry Christmas";
   try {
     await Promise.race([
@@ -916,7 +916,7 @@ async function makePng(d) {
     g.fillText(o.ch, M + o.x, top + o.y);
     if (o.isVal) { g.fillStyle = "rgba(168,40,47,0.55)"; g.fillRect(M + o.x, top + o.y + 10, o.w, 3); }
   });
-  g.textAlign = "center"; g.fillStyle = "#a8282f"; g.font = '700 88px Caveat,"Segoe Script","Bradley Hand",cursive';
+  g.textAlign = "center"; g.fillStyle = "#a8282f"; g.font = '400 92px "Pinyon Script","Snell Roundhand","Apple Chancery",cursive';
   g.fillText("Merry Christmas", W / 2, H - 120);
   return new Promise((res, rej) => cv.toBlob((b) => (b ? res(b) : rej(new Error("toBlob"))), "image/png"));
 }
