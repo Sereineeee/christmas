@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080b12">
 <title>聖誕許願桌</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chiron+Sung+HK:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chiron+Hei+HK:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&display=swap">
 <style>
@@ -30,9 +32,10 @@
   --line: rgba(217, 184, 114, 0.28);
   --font-title: "Cinzel", "Trajan Pro", "Times New Roman", serif;
   --font-script: "Cormorant Garamond", "Cormorant", "Garamond", "Times New Roman", serif;
-  --font-display: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  --font-display: "Chiron Sung HK", "Noto Serif TC", "Songti TC", "PMingLiU", serif;
   --font-hand: "LXGW WenKai TC", "Kaiti TC", "BiauKai", "Noto Serif TC", serif;
-  --font-ui: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
+  --font-ui: "Chiron Hei HK", "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
+  --pen: #1d2742;
 }
 
 * { box-sizing: border-box; }
@@ -141,15 +144,25 @@ a { color: inherit; }
 .paper {
   position: relative; color-scheme: light; color: var(--ink);
   background:
-    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(255, 255, 255, 0.55), transparent 70%),
-    linear-gradient(180deg, var(--ivory), var(--ivory-2));
-  font-family: var(--font-hand); font-size: 1.08rem; line-height: 2.2;
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='none' stroke='%239c7d45' stroke-opacity='.2'><circle cx='100' cy='100' r='92' stroke-width='1.2'/><circle cx='100' cy='100' r='85' stroke-width='.6'/><path d='M100 8v184M8 100h184M35 35l130 130M165 35L35 165' stroke-width='.5' stroke-dasharray='1.5 4'/><path d='M100 28l9 63 63 9-63 9-9 63-9-63-63-9 63-9z' fill='%239c7d45' fill-opacity='.06' stroke-width='.9'/><circle cx='100' cy='100' r='26' stroke-width='.6'/></svg>") 50% 52% / min(78%, 360px) no-repeat,
+    radial-gradient(ellipse 90% 55% at 50% 0%, rgba(255, 250, 238, 0.6), transparent 70%),
+    radial-gradient(ellipse 130% 100% at 50% 45%, transparent 58%, rgba(120, 88, 46, 0.2) 100%),
+    radial-gradient(ellipse 38% 26% at 12% 88%, rgba(150, 110, 60, 0.1), transparent 70%),
+    radial-gradient(ellipse 30% 22% at 90% 10%, rgba(150, 110, 60, 0.08), transparent 70%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><filter id='f'><feTurbulence type='turbulence' baseFrequency='0.006 0.16' numOctaves='2' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.4  0 0 0 0 0.25  0 0 0 0.9 -0.56'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.42  0 0 0 0 0.32  0 0 0 0 0.18  0 0 0 0.55 -0.2'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>"),
+    linear-gradient(180deg, #f7f0e1, #ebdec4);
+  font-family: var(--font-display); font-weight: 500; font-size: 1.05rem; line-height: 2.2; letter-spacing: 0.02em;
   padding: 44px 26px 36px; border-radius: 2px;
   box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), 0 8px 20px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(156, 125, 69, 0.25);
 }
 .paper::before {
   content: ""; position: absolute; inset: 12px; pointer-events: none; border: 1px solid rgba(156, 125, 69, 0.55);
   box-shadow: inset 0 0 0 3px var(--ivory), inset 0 0 0 4px rgba(156, 125, 69, 0.35);
+}
+.paper::after {
+  content: ""; position: absolute; inset: 20px; pointer-events: none;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='%239c7d45' stroke-width='1.1'><g transform=''><path d='M3 26V3h23'/><path d='M9 20V9h11' stroke-opacity='.6'/><path d='M3 3l6 6' stroke-opacity='.6'/><rect x='1' y='1' width='4' height='4' transform='rotate(45 3 3)' fill='%239c7d45' stroke='none'/></g></svg>") top left / 30px no-repeat, url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='%239c7d45' stroke-width='1.1'><g transform='translate(40 0) scale(-1 1)'><path d='M3 26V3h23'/><path d='M9 20V9h11' stroke-opacity='.6'/><path d='M3 3l6 6' stroke-opacity='.6'/><rect x='1' y='1' width='4' height='4' transform='rotate(45 3 3)' fill='%239c7d45' stroke='none'/></g></svg>") top right / 30px no-repeat, url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='%239c7d45' stroke-width='1.1'><g transform='translate(0 40) scale(1 -1)'><path d='M3 26V3h23'/><path d='M9 20V9h11' stroke-opacity='.6'/><path d='M3 3l6 6' stroke-opacity='.6'/><rect x='1' y='1' width='4' height='4' transform='rotate(45 3 3)' fill='%239c7d45' stroke='none'/></g></svg>") bottom left / 30px no-repeat, url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='%239c7d45' stroke-width='1.1'><g transform='translate(40 40) scale(-1 -1)'><path d='M3 26V3h23'/><path d='M9 20V9h11' stroke-opacity='.6'/><path d='M3 3l6 6' stroke-opacity='.6'/><rect x='1' y='1' width='4' height='4' transform='rotate(45 3 3)' fill='%239c7d45' stroke='none'/></g></svg>") bottom right / 30px no-repeat;
 }
 .dear { font-family: var(--font-script); font-style: italic; font-size: 2.5rem; font-weight: 600; color: var(--wine); line-height: 1.2; margin-bottom: 8px; }
 
@@ -177,7 +190,7 @@ a { color: inherit; }
 .ln { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.55rem; margin: 0; min-width: 0; }
 .ln > span { white-space: nowrap; }
 .ln input[type="text"] {
-  flex: 1 1 7rem; min-width: 0; font: inherit; color: var(--ink); background: transparent;
+  flex: 1 1 7rem; min-width: 0; font: inherit; font-family: var(--font-hand); font-weight: 400; font-size: 1.1em; color: var(--pen); background: transparent;
   border: 0; border-bottom: 1px solid rgba(34, 28, 23, 0.4); border-radius: 0; padding: 0 0.2rem; line-height: 1.7; height: 2.2rem;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
@@ -186,7 +199,7 @@ a { color: inherit; }
 .block { display: block; margin-top: 6px; }
 .block > span { display: block; }
 .block textarea {
-  width: 100%; font: inherit; line-height: 1.8; color: var(--ink); background: rgba(255, 255, 255, 0.35); resize: vertical;
+  width: 100%; font: inherit; font-family: var(--font-hand); font-weight: 400; line-height: 1.8; color: var(--pen); background: rgba(255, 255, 255, 0.3); resize: vertical;
   border: 1px solid rgba(156, 125, 69, 0.4); border-radius: 2px; padding: 6px 10px; min-height: 4.6rem;
 }
 .hint { font-family: var(--font-ui); font-size: 0.8rem; line-height: 1.5; color: var(--ink-soft); margin: 0 0 8px; }
@@ -216,7 +229,7 @@ a { color: inherit; }
 .ask h2 { font-family: var(--font-script); font-style: italic; font-size: 2.9rem; font-weight: 600; color: var(--wine); line-height: 1.1; }
 .ask label { display: block; font-weight: 700; margin-top: 12px; }
 .ask input[type="text"] {
-  display: block; width: 100%; margin-top: 4px; font: inherit; font-size: 1.2rem; color: var(--ink); background: transparent;
+  display: block; width: 100%; margin-top: 4px; font: inherit; font-family: var(--font-hand); font-weight: 400; font-size: 1.25rem; color: var(--pen); background: transparent;
   border: 0; border-bottom: 1px solid rgba(34, 28, 23, 0.45); padding: 4px 4px; height: 2.8rem;
 }
 .ask input[type="text"]:focus { outline: none; border-color: var(--gold-lo); background: rgba(217, 184, 114, 0.12); }
@@ -270,8 +283,9 @@ a { color: inherit; }
 .reads .ln { display: block; margin: 0 0 0.3rem; }
 .reads .ln > span { white-space: normal; }
 .reads .pre { color: var(--ink-soft); }
-.reads .val { font-weight: 700; border-bottom: 1px solid var(--gold-lo); padding: 0 0.2em; overflow-wrap: anywhere; }
+.reads .val { font-family: var(--font-hand); font-size: 1.08em; color: var(--pen); font-weight: 700; border-bottom: 1px solid var(--gold-lo); padding: 0 0.2em; overflow-wrap: anywhere; }
 .reads .val.blank { font-weight: 400; opacity: 0.6; border-bottom-style: dashed; }
+.reads .note-line > span:last-child { font-family: var(--font-hand); color: var(--pen); }
 .reads .note-line { margin-top: 0.8rem; padding-top: 0.6rem; border-top: 1px solid rgba(156, 125, 69, 0.35); overflow-wrap: anywhere; }
 .reads .sign { font-family: var(--font-script); font-style: italic; font-weight: 600; font-size: 2rem; color: var(--wine); text-align: right; margin-top: 10px; line-height: 1.2; }
 
@@ -900,8 +914,9 @@ function layoutText(lines, maxW, fs, lh, f) {
 async function makePng(d) {
   const lines = letterLines(d);
   if (d.note && String(d.note).trim()) lines.push({ pre: "備注：", val: String(d.note).trim(), suf: "", blank: false });
-  const fam = '"LXGW WenKai TC","Kaiti TC","BiauKai","Noto Serif TC",serif';
-  const f = (w, px) => w + " " + px + "px " + fam;
+  const hand = '"LXGW WenKai TC","Kaiti TC","BiauKai","Noto Serif TC",serif';
+  const sung = '"Chiron Sung HK","Noto Serif TC","Songti TC","PMingLiU",serif';
+  const f = (w, px) => (w === 700 ? "700 " + px + "px " + hand : "500 " + px + "px " + sung);
   const script = 'italic 600 112px "Cormorant Garamond","Garamond","Times New Roman",serif';
   const sample = lines.map((l) => l.pre + l.val + l.suf).join("") + "Dear Santa, Merry Christmas";
   try {
@@ -920,6 +935,39 @@ async function makePng(d) {
   const bg = g.createLinearGradient(0, 0, 0, H);
   bg.addColorStop(0, "#f7f0e2"); bg.addColorStop(1, "#e9dcc2");
   g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  // paper grain and fibres
+  const nc = document.createElement("canvas"); nc.width = W; nc.height = H;
+  const nx = nc.getContext("2d"); const img = nx.createImageData(W, H); const nd = img.data;
+  for (let i = 0; i < nd.length; i += 4) {
+    const v = Math.random();
+    if (v < 0.45) { nd[i] = 110; nd[i + 1] = 84; nd[i + 2] = 48; nd[i + 3] = (0.45 - v) * 46; }
+  }
+  nx.putImageData(img, 0, 0);
+  g.drawImage(nc, 0, 0);
+  g.strokeStyle = "rgba(130,100,60,0.05)"; g.lineWidth = 1;
+  for (let i = 0; i < 260; i++) {
+    const y = Math.random() * H, x = Math.random() * W, len = 40 + Math.random() * 160;
+    g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + len / 2, y + (Math.random() - 0.5) * 6, x + len, y + (Math.random() - 0.5) * 4); g.stroke();
+  }
+  const age = g.createRadialGradient(W / 2, H * 0.45, Math.min(W, H) * 0.38, W / 2, H * 0.45, Math.max(W, H) * 0.78);
+  age.addColorStop(0, "rgba(120,88,46,0)"); age.addColorStop(1, "rgba(120,88,46,0.24)");
+  g.fillStyle = age; g.fillRect(0, 0, W, H);
+  // watermark crest
+  g.save(); g.translate(W / 2, H * 0.52); const R = Math.min(W, H) * 0.36;
+  g.strokeStyle = "rgba(156,125,69,0.16)"; g.lineWidth = 2.4; g.beginPath(); g.arc(0, 0, R, 0, Math.PI * 2); g.stroke();
+  g.lineWidth = 1.2; g.beginPath(); g.arc(0, 0, R * 0.92, 0, Math.PI * 2); g.stroke();
+  g.beginPath(); g.arc(0, 0, R * 0.28, 0, Math.PI * 2); g.stroke();
+  const st = R * 0.78, sw = R * 0.1;
+  g.beginPath(); g.moveTo(0, -st); g.lineTo(sw, -sw); g.lineTo(st, 0); g.lineTo(sw, sw); g.lineTo(0, st); g.lineTo(-sw, sw); g.lineTo(-st, 0); g.lineTo(-sw, -sw); g.closePath();
+  g.fillStyle = "rgba(156,125,69,0.06)"; g.fill(); g.lineWidth = 1.6; g.stroke();
+  g.restore();
+  // foil corners
+  g.strokeStyle = "rgba(156,125,69,0.8)"; g.fillStyle = "rgba(156,125,69,0.8)"; g.lineWidth = 2;
+  [[76, 76, 1, 1], [W - 76, 76, -1, 1], [76, H - 76, 1, -1], [W - 76, H - 76, -1, -1]].forEach(([cx, cy, sx, sy]) => {
+    g.beginPath(); g.moveTo(cx, cy + sy * 46); g.lineTo(cx, cy); g.lineTo(cx + sx * 46, cy); g.stroke();
+    g.globalAlpha = 0.6; g.beginPath(); g.moveTo(cx + sx * 12, cy + sy * 34); g.lineTo(cx + sx * 12, cy + sy * 12); g.lineTo(cx + sx * 34, cy + sy * 12); g.stroke(); g.globalAlpha = 1;
+    g.beginPath(); g.moveTo(cx, cy - 5); g.lineTo(cx + 5, cy); g.lineTo(cx, cy + 5); g.lineTo(cx - 5, cy); g.closePath(); g.fill();
+  });
   g.strokeStyle = "rgba(156,125,69,0.75)"; g.lineWidth = 2; g.strokeRect(40, 40, W - 80, H - 80);
   g.strokeStyle = "rgba(156,125,69,0.4)"; g.lineWidth = 1.5; g.strokeRect(54, 54, W - 108, H - 108);
   g.textBaseline = "alphabetic"; g.textAlign = "center";
@@ -931,7 +979,7 @@ async function makePng(d) {
   g.fillStyle = "#7d1d2c"; g.font = script; g.fillText("Dear Santa,", M, 250);
   lay.ops.forEach((o) => {
     g.font = f(o.isVal ? 700 : 400, FS);
-    g.fillStyle = o.isVal ? "#221c17" : "#6d6355";
+    g.fillStyle = o.isVal ? "#1d2742" : "#5f5648";
     g.fillText(o.ch, M + o.x, top + o.y);
     if (o.isVal) { g.fillStyle = "rgba(156,125,69,0.8)"; g.fillRect(M + o.x, top + o.y + 10, o.w, 2); }
   });
