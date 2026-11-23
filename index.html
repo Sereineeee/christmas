@@ -143,10 +143,6 @@ a { color: inherit; }
 
 .door-count { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 0.72rem; letter-spacing: 0.06em; color: var(--gold-hi); background: rgba(8, 11, 18, 0.55); white-space: nowrap; }
 .door-count svg { width: 11px; height: 11px; flex: none; margin: 0; filter: none; }
-.door.locked { cursor: not-allowed; }
-.door.locked:hover { transform: none; border-color: var(--line); }
-.door.locked .door-latin { opacity: 0.48; }
-.door.locked .door-zh { opacity: 0.6; }
 .count { margin-top: 30px; color: var(--fg-soft); font-size: 0.88rem; text-align: center; min-height: 1.6em; letter-spacing: 0.06em; }
 .footlink { margin-top: 26px; text-align: center; font-size: 0.8rem; }
 .footlink a { color: var(--fg-soft); text-decoration-color: var(--line); text-underline-offset: 4px; }
@@ -284,14 +280,37 @@ a { color: inherit; }
   transition: transform 0.6s ease, z-index 0s 0.3s;
 }
 .env .seal-wax {
-  left: 50%; top: 58%; width: 50px; height: 50px; margin: -25px 0 0 -25px; z-index: 5; border-radius: 50%;
-  display: grid; place-items: center; color: rgba(241, 217, 160, 0.9); font-family: var(--font-title); font-size: 1.1rem; font-weight: 600;
-  background: radial-gradient(circle at 35% 30%, #c4485b, #5e1220 75%); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45), inset 0 0 0 4px rgba(255, 255, 255, 0.1), inset 0 0 0 6px rgba(94, 18, 32, 0.6);
-  transition: opacity 0.3s ease 0.45s;
+  left: 50%; top: 58%; width: 50px; height: 50px; margin: -25px 0 0 -25px; z-index: 5;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.45));
+  transition: opacity 0.3s ease 0.45s, transform 0.15s ease;
 }
+.env .seal-wax .half {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #c4485b, #5e1220 75%);
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.1), inset 0 0 0 6px rgba(94, 18, 32, 0.6);
+  transition: transform 0.7s cubic-bezier(0.3, 0.6, 0.3, 1), opacity 0.7s ease;
+}
+.env .seal-wax .half.l { clip-path: polygon(0 0, 53% 0, 45% 28%, 56% 52%, 46% 76%, 52% 100%, 0 100%); }
+.env .seal-wax .half.r { clip-path: polygon(53% 0, 100% 0, 100% 100%, 52% 100%, 46% 76%, 56% 52%, 45% 28%); }
+.env .seal-wax .mono {
+  position: absolute; inset: 0; display: grid; place-items: center; color: rgba(241, 217, 160, 0.9);
+  font-family: var(--font-title); font-size: 1.1rem; font-weight: 600; transition: opacity 0.25s ease;
+}
+.env .seal-wax .ring { position: absolute; inset: -12px; width: calc(100% + 24px); height: calc(100% + 24px); transform: rotate(-90deg); opacity: 0; transition: opacity 0.3s ease; overflow: visible; }
+.env .seal-wax .ring circle { fill: none; stroke-width: 2.4; stroke-linecap: round; }
+.env .seal-wax .ring-bg { stroke: rgba(241, 217, 160, 0.22); }
+.env .seal-wax .ring-fg { stroke: var(--gold-hi); stroke-dasharray: 182.2; stroke-dashoffset: 182.2; filter: drop-shadow(0 0 4px rgba(241, 217, 160, 0.8)); }
+.env.holdable .seal-wax .ring { opacity: 1; }
+.env.holdable .seal-wax { animation: sealPulse 1.8s ease-in-out infinite; }
+.env.pressing .seal-wax { animation: none; }
+@keyframes sealPulse { 0%, 100% { filter: drop-shadow(0 4px 5px rgba(0,0,0,.45)) drop-shadow(0 0 0 rgba(241,217,160,0)); } 50% { filter: drop-shadow(0 4px 5px rgba(0,0,0,.45)) drop-shadow(0 0 10px rgba(241,217,160,.55)); } }
+.env .seal-wax.cracked .half.l { transform: translate(-16px, 26px) rotate(-28deg); opacity: 0; }
+.env .seal-wax.cracked .half.r { transform: translate(16px, 30px) rotate(24deg); opacity: 0; }
+.env .seal-wax.cracked .mono, .env .seal-wax.cracked .ring { opacity: 0; }
+.env-btn { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
 .env.open .flap { transform: rotateX(180deg); z-index: 1; }
 .env.open .env-letter { transform: translateY(-62%); }
-.env.open .seal-wax { opacity: 0; transition-delay: 0s; }
+.env.open .seal-wax:not(.cracked) { opacity: 0; transition-delay: 0s; }
 .env.instant, .env.instant * { transition: none !important; }
 
 .from { text-align: center; color: var(--fg-soft); font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 0.24em; margin: 4px 0 22px; }
@@ -320,6 +339,19 @@ a { color: inherit; }
 #toast { background: rgba(10, 13, 20, 0.94); border: 1px solid var(--line); color: var(--fg); padding: 10px 20px; border-radius: 999px; font-size: 0.9rem; opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; }
 #toast.show { opacity: 1; transform: translateY(0); }
 
+
+/* ---------- Waiting room ---------- */
+.wait { text-align: center; padding: 6px 0 26px; }
+.wait-env .env { margin: 18px auto 0; width: min(62vw, 230px); filter: drop-shadow(0 22px 26px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 26px rgba(241, 200, 130, 0.14)); animation: float 5s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(-1deg); } }
+.wait-label { margin-top: 26px; font-family: var(--font-title); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.42em; padding-left: 0.42em; text-transform: uppercase; color: var(--gold); }
+.wait-count { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+.wait-count span { display: grid; justify-items: center; min-width: 58px; padding: 10px 6px 8px; border: 1px solid var(--line); border-radius: 4px; background: rgba(8, 11, 18, 0.5); }
+.wait-count b { font-family: var(--font-title); font-weight: 500; font-size: 1.7rem; line-height: 1.1; color: var(--gold-hi); font-variant-numeric: tabular-nums; }
+.wait-count i { font-style: normal; font-size: 0.72rem; letter-spacing: 0.2em; padding-left: 0.2em; color: var(--fg-soft); margin-top: 2px; }
+.wait-note { margin-top: 16px; color: var(--fg-soft); font-size: 0.85rem; line-height: 1.7; }
+.demo-note { text-align: center; color: var(--gold); font-size: 0.82rem; margin: 0 0 14px; }
+.msg.ok { color: var(--pen); }
 
 /* ---------- Music ---------- */
 .music-btn {
@@ -470,6 +502,15 @@ a { color: inherit; }
     <a class="back" href="#home">← 回到入口</a>
 
     <div id="santaAsk" class="ask">
+      <div id="waitBox" class="wait" hidden>
+        <div class="wait-env" id="waitEnv" aria-hidden="true"></div>
+        <p class="wait-label">Opens in</p>
+        <div class="wait-count" role="timer" aria-live="off">
+          <span><b id="wD">00</b><i>天</i></span><span><b id="wH">00</b><i>時</i></span><span><b id="wM">00</b><i>分</i></span><span><b id="wS">00</b><i>秒</i></span>
+        </div>
+        <p class="wait-note">12 月 1 日凌晨 0 點（台灣時間）開放拆信。<br>可以先確認身分，時間一到就能直接拆。</p>
+      </div>
+      <p id="demoNote" class="demo-note" hidden>試玩模式：抽到的是範例信，不會讀寫任何資料。</p>
       <form id="santaForm" class="paper" autocomplete="off" novalidate>
         <h2>I am Santa</h2>
         <p class="hint" style="margin-top:6px">先確認你是誰，系統會幫你避開自己的那一封。</p>
@@ -483,7 +524,7 @@ a { color: inherit; }
 
     <div id="stage" class="stage" hidden>
       <p id="stageCap" class="stage-cap" aria-live="polite">有一封信正在飛過來…</p>
-      <button type="button" id="envBtn" class="env-btn" aria-label="拆開這封信" disabled></button>
+      <button type="button" id="envBtn" class="env-btn" aria-label="長按蠟印，拆開這封信" disabled></button>
     </div>
 
     <div id="reveal" class="reveal" hidden>
@@ -669,7 +710,7 @@ function dbMsg(err) {
   return "信箱暫時出了點問題，請稍後再試一次。";
 }
 function envHTML() {
-  return '<div class="env"><div class="env-back"></div><div class="env-letter"></div><div class="env-front"></div><div class="flap"></div><div class="seal-wax" aria-hidden="true">S</div></div>';
+  return '<div class="env"><div class="env-back"></div><div class="env-letter"></div><div class="env-front"></div><div class="flap"></div><div class="seal-wax" aria-hidden="true"><span class="half l"></span><span class="half r"></span><span class="mono">S</span><svg class="ring" viewBox="0 0 64 64"><circle class="ring-bg" cx="32" cy="32" r="29"/><circle class="ring-fg" cx="32" cy="32" r="29"/></svg></div></div>';
 }
 function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* private mode */ } }
 function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -680,7 +721,8 @@ const SCREENS = ["home", "wish", "santa", "setup"];
 const OPEN_AT = Date.UTC(2026, 10, 30, 16, 0, 0);
 let clockOffset = 0;
 const nowMs = () => Date.now() + clockOffset;
-const isOpen = () => nowMs() >= OPEN_AT;
+const DEMO = new URLSearchParams(location.search).has("demo");
+const isOpen = () => DEMO || nowMs() >= OPEN_AT;
 const LOCK_MSG = "12 月 1 日凌晨 0 點（台灣時間）才開放抽信";
 function pad2(n) { return String(n).padStart(2, "0"); }
 function fmtLeft(ms) {
@@ -689,14 +731,25 @@ function fmtLeft(ms) {
   return (d ? d + " 天 " : "") + pad2(h) + ":" + pad2(m) + ":" + pad2(sec);
 }
 let wasOpen = null;
+function setDrawLabel() {
+  const b = $("drawBtn");
+  if (!b.disabled) b.textContent = isOpen() ? "請馴鹿送信" : "先確認身分";
+}
 function updateLock() {
   const open = isOpen();
-  const door = document.querySelector(".door-santa");
-  door.classList.toggle("locked", !open);
-  door.setAttribute("aria-disabled", String(!open));
   $("santaCountBox").hidden = open;
   if (!open) $("santaCount").textContent = fmtLeft(OPEN_AT - nowMs()) + " 後開放";
-  if (wasOpen === false && open) toast("I am Santa 開放了！");
+  $("waitBox").hidden = open;
+  if (!open) {
+    const t = Math.max(0, Math.ceil((OPEN_AT - nowMs()) / 1000));
+    $("wD").textContent = pad2(Math.floor(t / 86400)); $("wH").textContent = pad2(Math.floor((t % 86400) / 3600));
+    $("wM").textContent = pad2(Math.floor((t % 3600) / 60)); $("wS").textContent = pad2(t % 60);
+  }
+  setDrawLabel();
+  if (wasOpen === false && open) {
+    toast("時間到了！可以拆信了");
+    if (!$("screen-santa").hidden && !$("santaAsk").hidden && $("santaName").value.trim()) $("santaName").focus();
+  }
   wasOpen = open;
 }
 async function syncClock() {
@@ -710,20 +763,12 @@ async function syncClock() {
   wasOpen = null;
   updateLock();
 }
-document.querySelector(".door-santa").addEventListener("click", (e) => {
-  if (!isOpen()) { e.preventDefault(); toast(LOCK_MSG); }
-});
 setInterval(updateLock, 1000);
 
 function route() {
   const h = location.hash.replace("#", "");
   let name = SCREENS.indexOf(h) >= 0 ? h : "home";
   if (!DB) name = "setup";
-  if (name === "santa" && !isOpen()) {
-    name = "home";
-    history.replaceState(null, "", location.pathname + location.search + "#home");
-    toast(LOCK_MSG);
-  }
   SCREENS.forEach((s) => { $("screen-" + s).hidden = s !== name; });
   document.body.dataset.scene = name === "home" || name === "setup" ? "home" : "desk";
   window.scrollTo(0, 0);
@@ -861,24 +906,39 @@ async function playSent(name) {
 /* ---------- I am Santa ---------- */
 function enterSanta() {
   $("santaMsg").textContent = "";
+  $("santaMsg").classList.remove("ok");
   $("stage").hidden = true;
   $("reveal").hidden = true;
   $("santaAsk").hidden = false;
+  $("demoNote").hidden = !DEMO;
+  if (!$("waitEnv").firstChild) $("waitEnv").innerHTML = envHTML();
+  const saved = load("xmasSanta");
+  if (saved && !$("santaName").value) $("santaName").value = saved;
   $("drawBtn").disabled = false;
-  $("drawBtn").textContent = "請馴鹿送信";
+  setDrawLabel();
+  updateLock();
 }
+const DEMO_LETTER = { name: "聖誕小精靈", kind: "isnot", style: "復古", color: "酒紅", effect: "讓冬天的晚上更溫暖", never: "香氛蠟燭", note: "這是試玩用的範例信。" };
 async function startDraw() {
   const msg = $("santaMsg"), btn = $("drawBtn");
   msg.textContent = "";
   const name = $("santaName").value.trim();
+  msg.classList.remove("ok");
   if (!name) { msg.textContent = "請輸入你許願時寫的名字。"; $("santaName").focus(); return; }
-  if (!isOpen()) { msg.textContent = LOCK_MSG + "。"; return; }
+  if (DEMO) { current = DEMO_LETTER; playMail(false); return; }
+  const verifying = !isOpen();
   btn.disabled = true;
-  btn.textContent = "馴鹿出發中…";
+  btn.textContent = verifying ? "確認中…" : "馴鹿出發中…";
   try {
     const myKey = keyOf(name);
     if (!(await fb.getWish(myKey))) {
       msg.textContent = "找不到「" + name + "」寫的願望信。請輸入「我是」後面的名字，或先到 make a wish 寫一封。";
+      return;
+    }
+    store("xmasSanta", name);
+    if (verifying && !isOpen()) {
+      msg.classList.add("ok");
+      msg.textContent = "確認是你了，" + name + "。12 月 1 日凌晨 0 點開放後，回到這裡按「請馴鹿送信」就能拆信。";
       return;
     }
     const result = await drawFor(myKey, rand, sleep);
@@ -888,7 +948,7 @@ async function startDraw() {
   } catch (err) {
     msg.textContent = dbMsg(err);
   } finally {
-    if (!$("santaAsk").hidden) { btn.disabled = false; btn.textContent = "請馴鹿送信"; }
+    if (!$("santaAsk").hidden) { btn.disabled = false; setDrawLabel(); }
   }
 }
 async function playMail(again) {
@@ -902,17 +962,56 @@ async function playMail(again) {
   btn.innerHTML = '<div class="env-wrap fly">' + envHTML() + "</div>";
   const env = btn.querySelector(".env");
   await sleep(2600);
-  cap.textContent = "信送到了。點一下，拆開它";
+  cap.textContent = "信送到了。長按蠟印，壓碎它";
   btn.disabled = false;
+  env.classList.add("holdable");
   btn.focus({ preventScroll: true });
-  btn.onclick = async () => {
+  holdToBreak(btn, env, async () => {
     btn.disabled = true;
-    btn.onclick = null;
-    cap.textContent = "…";
+    cap.textContent = "";
+    env.classList.remove("holdable");
+    env.querySelector(".seal-wax").classList.add("cracked");
+    await sleep(520);
     env.classList.add("open");
     await sleep(1500);
     showLetter();
+  });
+}
+function holdToBreak(btn, env, done) {
+  const HOLD = 1100, C = 182.2;
+  const seal = env.querySelector(".seal-wax"), ring = env.querySelector(".ring-fg");
+  let start = 0, raf = 0, finished = false;
+  const set = (p) => { ring.style.strokeDashoffset = String(C * (1 - p)); seal.style.transform = "scale(" + (1 - p * 0.08) + ")"; };
+  const tick = () => {
+    const p = Math.min(1, (performance.now() - start) / HOLD);
+    set(p);
+    if (p >= 1) finish(); else raf = requestAnimationFrame(tick);
   };
+  const begin = (e) => {
+    if (finished || btn.disabled || start) return;
+    if (e.cancelable) e.preventDefault();
+    if (e.pointerId != null && btn.setPointerCapture) { try { btn.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } }
+    start = performance.now(); ring.style.transition = "none"; env.classList.add("pressing");
+    raf = requestAnimationFrame(tick);
+  };
+  const cancel = () => {
+    if (finished || !start) return;
+    cancelAnimationFrame(raf); start = 0; env.classList.remove("pressing");
+    ring.style.transition = "stroke-dashoffset 0.35s ease"; seal.style.transform = ""; set(0);
+    $("stageCap").textContent = "按住不要放開，直到蠟印碎裂";
+  };
+  const finish = () => {
+    finished = true; cancelAnimationFrame(raf); env.classList.remove("pressing"); seal.style.transform = "";
+    try { if (navigator.vibrate) navigator.vibrate(40); } catch (err) { /* ignore */ }
+    btn.onpointerdown = btn.onpointerup = btn.onpointercancel = btn.onlostpointercapture = btn.onkeydown = btn.onkeyup = null;
+    done();
+  };
+  btn.onclick = null;
+  btn.onpointerdown = begin;
+  btn.onpointerup = cancel; btn.onpointercancel = cancel; btn.onlostpointercapture = cancel;
+  btn.oncontextmenu = (e) => e.preventDefault();
+  btn.onkeydown = (e) => { if ((e.key === " " || e.key === "Enter") && !e.repeat) begin(e); };
+  btn.onkeyup = (e) => { if (e.key === " " || e.key === "Enter") cancel(); };
 }
 function renderLetter(box, d) {
   box.textContent = "";
