@@ -144,7 +144,6 @@ a { color: inherit; }
 .paper {
   position: relative; color-scheme: light; color: var(--ink);
   background:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='none' stroke='%239c7d45' stroke-opacity='.2'><circle cx='100' cy='100' r='92' stroke-width='1.2'/><circle cx='100' cy='100' r='85' stroke-width='.6'/><path d='M100 8v184M8 100h184M35 35l130 130M165 35L35 165' stroke-width='.5' stroke-dasharray='1.5 4'/><path d='M100 28l9 63 63 9-63 9-9 63-9-63-63-9 63-9z' fill='%239c7d45' fill-opacity='.06' stroke-width='.9'/><circle cx='100' cy='100' r='26' stroke-width='.6'/></svg>") 50% 52% / min(78%, 360px) no-repeat,
     radial-gradient(ellipse 90% 55% at 50% 0%, rgba(255, 250, 238, 0.6), transparent 70%),
     radial-gradient(ellipse 130% 100% at 50% 45%, transparent 58%, rgba(120, 88, 46, 0.2) 100%),
     radial-gradient(ellipse 38% 26% at 12% 88%, rgba(150, 110, 60, 0.1), transparent 70%),
@@ -952,15 +951,6 @@ async function makePng(d) {
   const age = g.createRadialGradient(W / 2, H * 0.45, Math.min(W, H) * 0.38, W / 2, H * 0.45, Math.max(W, H) * 0.78);
   age.addColorStop(0, "rgba(120,88,46,0)"); age.addColorStop(1, "rgba(120,88,46,0.24)");
   g.fillStyle = age; g.fillRect(0, 0, W, H);
-  // watermark crest
-  g.save(); g.translate(W / 2, H * 0.52); const R = Math.min(W, H) * 0.36;
-  g.strokeStyle = "rgba(156,125,69,0.16)"; g.lineWidth = 2.4; g.beginPath(); g.arc(0, 0, R, 0, Math.PI * 2); g.stroke();
-  g.lineWidth = 1.2; g.beginPath(); g.arc(0, 0, R * 0.92, 0, Math.PI * 2); g.stroke();
-  g.beginPath(); g.arc(0, 0, R * 0.28, 0, Math.PI * 2); g.stroke();
-  const st = R * 0.78, sw = R * 0.1;
-  g.beginPath(); g.moveTo(0, -st); g.lineTo(sw, -sw); g.lineTo(st, 0); g.lineTo(sw, sw); g.lineTo(0, st); g.lineTo(-sw, sw); g.lineTo(-st, 0); g.lineTo(-sw, -sw); g.closePath();
-  g.fillStyle = "rgba(156,125,69,0.06)"; g.fill(); g.lineWidth = 1.6; g.stroke();
-  g.restore();
   // foil corners
   g.strokeStyle = "rgba(156,125,69,0.8)"; g.fillStyle = "rgba(156,125,69,0.8)"; g.lineWidth = 2;
   [[76, 76, 1, 1], [W - 76, 76, -1, 1], [76, H - 76, 1, -1], [W - 76, H - 76, -1, -1]].forEach(([cx, cy, sx, sy]) => {
