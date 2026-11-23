@@ -1148,7 +1148,7 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("shee
 })();
 </script>
 <script>
-/* Background music: an original 80s-style love ballad by the fireplace,
+/* Background music: an original music-box arrangement of "Silent Night" (Gruber, 1818, public domain),
    rendered in the browser, then looped through an <audio> element. */
 (() => {
   const btn = document.getElementById("musicBtn");
@@ -1158,155 +1158,97 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("shee
   const getPref = () => { try { return localStorage.getItem("xmasMusic"); } catch (e) { return null; } };
   const setPref = (v) => { try { localStorage.setItem("xmasMusic", v); } catch (e) { /* private mode */ } };
 
-  /* An original 80s-style love ballad in D: FM electric piano, string pad, soft bass, singing synth lead. */
-  const BEAT = 60 / 66;
-  const SONG = [
-    [[0, [54, 57, 61, 64], 38]],
-    [[0, [54, 57, 61, 64], 42]],
-    [[0, [54, 59, 62, 66], 43]],
-    [[0, [55, 59, 62, 64], 45], [2, [55, 61, 64, 69], 45]],
-    [[0, [57, 61, 62, 66], 47]],
-    [[0, [54, 57, 61, 64], 42]],
-    [[0, [54, 59, 62, 66], 43]],
-    [[0, [55, 59, 62, 64], 45], [2, [55, 61, 64, 69], 45]],
-    [[0, [57, 59, 62, 66], 43]],
-    [[0, [57, 61, 64, 69], 43]],
-    [[0, [54, 57, 61, 64], 42]],
-    [[0, [54, 57, 62, 66], 47]],
-    [[0, [55, 59, 62, 66], 40]],
-    [[0, [55, 61, 66, 71], 45]],
-    [[0, [54, 59, 62, 66], 43], [2, [55, 59, 62, 64], 45]],
-    [[0, [57, 62, 64, 69], 38], [2, [57, 62, 66, 69], 38]],
+  const EIGHTH = 0.44;
+  const MEL = [
+    [67,3],[69,1],[67,2],[64,6], [67,3],[69,1],[67,2],[64,6],
+    [74,4],[74,2],[71,6], [72,4],[72,2],[67,6],
+    [69,4],[69,2],[72,3],[71,1],[69,2], [67,3],[69,1],[67,2],[64,6],
+    [69,4],[69,2],[72,3],[71,1],[69,2], [67,3],[69,1],[67,2],[64,6],
+    [74,4],[74,2],[77,3],[74,1],[71,2], [72,6],[76,6],
+    [72,3],[67,1],[64,2],[67,3],[65,1],[62,2], [60,12],
   ];
-  const MELODY = [
-    [0,0,78,1.5],[0,1.5,76,0.5],[0,2,73,1],[0,3,74,1],
-    [1,0,76,2],[1,2,69,1],[1,3,73,1],
-    [2,0,74,1.5],[2,1.5,71,0.5],[2,2,74,1],[2,3,78,1],
-    [3,0,76,3],[3,3,73,1],
-    [4,0,73,1],[4,1,74,1],[4,2,78,1.5],[4,3.5,76,0.5],
-    [5,0,76,1.5],[5,1.5,73,0.5],[5,2,69,2],
-    [6,0,71,1],[6,1,74,1],[6,2,79,1.5],[6,3.5,78,0.5],
-    [7,0,76,2],[7,2,74,1],[7,3,76,1],
-    [8,0,78,2],[8,2,81,1],[8,3,79,1],
-    [9,0,78,1.5],[9,1.5,76,0.5],[9,2,73,2],
-    [10,0,76,1],[10,1,78,1],[10,2,81,1.5],[10,3.5,79,0.5],
-    [11,0,78,2],[11,2,74,2],
-    [12,0,74,1],[12,1,76,1],[12,2,78,1],[12,3,79,1],
-    [13,0,78,1.5],[13,1.5,76,0.5],[13,2,76,1],[13,3,73,1],
-    [14,0,74,2],[14,2,76,2],
-    [15,0,74,3.5],
-  ];
+  const CH = { C: [48, 52, 55], G7: [43, 47, 50, 53], F: [41, 45, 48] };
+  const BARS = ["C","C","C","C","G7","G7","C","C","F","F","C","C","F","F","C","C","G7","G7","C","C","C","G7","C","C"];
   const hz = (n) => 440 * Math.pow(2, (n - 69) / 12);
 
   function impulse(ctx, secs) {
     const len = Math.floor(ctx.sampleRate * secs), b = ctx.createBuffer(2, len, ctx.sampleRate);
-    for (let c = 0; c < 2; c++) { const d = b.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.4); }
+    for (let c = 0; c < 2; c++) { const d = b.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
     return b;
   }
 
   async function render() {
-    const SR = 22050, BAR = 4 * BEAT, L = SONG.length * BAR, TAIL = 3.5;
+    const SR = 22050, L = BARS.length * 6 * EIGHTH, TAIL = 3;
     const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
     const ctx = new OAC(2, Math.ceil((L + TAIL) * SR), SR);
-    const master = ctx.createGain(); master.gain.value = 0.3;
-    const warm = ctx.createBiquadFilter(); warm.type = "lowpass"; warm.frequency.value = 6500; warm.Q.value = 0.3;
-    const verb = ctx.createConvolver(); verb.buffer = impulse(ctx, 2.8);
-    const wet = ctx.createGain(); wet.gain.value = 0.34;
-    master.connect(warm); warm.connect(ctx.destination); warm.connect(verb); verb.connect(wet); wet.connect(ctx.destination);
-    const bus = (panV, g, dest) => {
-      const gn = ctx.createGain(); gn.gain.value = g;
-      if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = panV; gn.connect(p); p.connect(dest || master); } else gn.connect(dest || master);
-      return gn;
-    };
-    const epBus = bus(-0.15, 1), bassBus = bus(0, 1), strL = bus(-0.6, 1), strR = bus(0.6, 1);
-    // lead with an 80s stereo echo
-    const leadBus = bus(0.08, 1);
-    const dl = ctx.createDelay(1.5), dr = ctx.createDelay(1.5), fbk = ctx.createGain(), echo = ctx.createGain();
-    dl.delayTime.value = BEAT * 0.75; dr.delayTime.value = BEAT * 1.5; fbk.gain.value = 0.28; echo.gain.value = 0.22;
-    leadBus.connect(dl); dl.connect(fbk); fbk.connect(dl); dl.connect(dr);
-    const eL = bus(-0.7, 1), eR = bus(0.7, 1); dl.connect(echo); echo.connect(eL); dr.connect(eR);
-    const strLp = ctx.createBiquadFilter(); strLp.type = "lowpass"; strLp.frequency.value = 1700;
-    strLp.connect(strL); strLp.connect(strR);
+    const master = ctx.createGain(); master.gain.value = 0.34;
+    const warm = ctx.createBiquadFilter(); warm.type = "lowpass"; warm.frequency.value = 5200; warm.Q.value = 0.4;
+    const verb = ctx.createConvolver(); verb.buffer = impulse(ctx, 2.2);
+    const wet = ctx.createGain(); wet.gain.value = 0.32;
+    const dry = ctx.createGain(); dry.gain.value = 0.85;
+    master.connect(warm); warm.connect(dry); warm.connect(verb); verb.connect(wet);
+    dry.connect(ctx.destination); wet.connect(ctx.destination);
+    const pan = (v) => { if (!ctx.createStereoPanner) return master; const p = ctx.createStereoPanner(); p.pan.value = v; p.connect(master); return p; };
+    const melBus = pan(0.12), arpBus = pan(-0.28), padBus = pan(0), bassBus = pan(0);
+    const padLp = ctx.createBiquadFilter(); padLp.type = "lowpass"; padLp.frequency.value = 760; padLp.connect(padBus);
 
-    function ep(t, n, v, dur) {
-      const f = hz(n), car = ctx.createOscillator(), mod = ctx.createOscillator(), mg = ctx.createGain(), tine = ctx.createOscillator(), tg = ctx.createGain(), out = ctx.createGain();
-      car.frequency.value = f; mod.frequency.value = f; tine.frequency.value = f * 14;
-      mg.gain.setValueAtTime(f * 1.7, t); mg.gain.exponentialRampToValueAtTime(f * 0.25, t + 1.2);
-      tg.gain.setValueAtTime(f * 0.9, t); tg.gain.exponentialRampToValueAtTime(1, t + 0.08);
-      mod.connect(mg); mg.connect(car.frequency); tine.connect(tg); tg.connect(car.frequency);
-      out.gain.setValueAtTime(0.0001, t); out.gain.exponentialRampToValueAtTime(v, t + 0.004);
-      out.gain.exponentialRampToValueAtTime(v * 0.35, t + 1.4); out.gain.setValueAtTime(v * 0.35, t + dur);
-      out.gain.exponentialRampToValueAtTime(0.0001, t + dur + 1.8);
-      car.connect(out); out.connect(epBus);
-      const end = t + dur + 1.9;
-      [car, mod, tine].forEach((o) => { o.start(t); o.stop(end); });
+    function box(t, n, v, bus) {
+      const f = hz(n), out = ctx.createGain();
+      out.gain.setValueAtTime(0.0001, t); out.gain.exponentialRampToValueAtTime(v, t + 0.006); out.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
+      out.connect(bus);
+      [[1, 1, 2.4], [2, 0.3, 1.4], [4.2, 0.07, 0.25]].forEach(([m, a, d]) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.frequency.value = f * m; o.detune.value = (Math.random() - 0.5) * 6;
+        g.gain.setValueAtTime(a, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+        o.connect(g); g.connect(out); o.start(t); o.stop(t + d + 0.05);
+      });
     }
-    function strings(t, notes, dur) {
+    function pad(t, notes, dur) {
       notes.forEach((n) => {
-        [[-9, strL], [9, strR]].forEach(([det]) => {
+        [["triangle", 0, 0.05], ["sawtooth", 6, 0.016]].forEach(([type, det, a]) => {
           const o = ctx.createOscillator(), g = ctx.createGain();
-          o.type = "sawtooth"; o.frequency.value = hz(n + 12); o.detune.value = det;
-          g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.012, t + 1.3);
-          g.gain.setValueAtTime(0.012, t + dur); g.gain.linearRampToValueAtTime(0.0001, t + dur + 1.6);
-          o.connect(g); g.connect(strLp); o.start(t); o.stop(t + dur + 1.7);
+          o.type = type; o.frequency.value = hz(n + 12); o.detune.value = det;
+          g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(a, t + 0.9);
+          g.gain.setValueAtTime(a, t + dur); g.gain.linearRampToValueAtTime(0.0001, t + dur + 1.4);
+          o.connect(g); g.connect(padLp); o.start(t); o.stop(t + dur + 1.5);
         });
       });
     }
-    function bassNote(t, n, dur) {
-      const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter();
-      o.frequency.value = hz(n - 12); o2.type = "triangle"; o2.frequency.value = hz(n - 12);
-      lp.type = "lowpass"; lp.frequency.value = 420;
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.26, t + 0.08);
-      g.gain.exponentialRampToValueAtTime(0.13, t + 1); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      o.connect(g); o2.connect(g); g.connect(lp); lp.connect(bassBus);
-      [o, o2].forEach((x) => { x.start(t); x.stop(t + dur + 0.05); });
-    }
-    function lead(t, n, beats) {
-      const dur = beats * BEAT, f = hz(n), o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain();
-      const vib = ctx.createOscillator(), vg = ctx.createGain(), lp = ctx.createBiquadFilter();
-      o.type = "triangle"; o.frequency.value = f; o2.frequency.value = f * 2; 
-      const o2g = ctx.createGain(); o2g.gain.value = 0.18;
-      vib.frequency.value = 5.2; vg.gain.setValueAtTime(0, t); vg.gain.linearRampToValueAtTime(f * 0.006, t + Math.min(0.6, dur));
-      vib.connect(vg); vg.connect(o.frequency); vg.connect(o2.frequency);
-      lp.type = "lowpass"; lp.frequency.value = 2600;
-      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.14, t + 0.07);
-      g.gain.setValueAtTime(0.13, t + Math.max(0.08, dur - 0.08)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.45);
-      o.connect(g); o2.connect(o2g); o2g.connect(g); g.connect(lp); lp.connect(leadBus);
-      [o, o2, vib].forEach((x) => { x.start(t); x.stop(t + dur + 0.5); });
+    function bass(t, n) {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = hz(n - 12);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.2, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + 3);
+      o.connect(g); g.connect(bassBus); o.start(t); o.stop(t + 3.1);
     }
 
-    SONG.forEach((changes, bar) => {
-      const t0 = bar * BAR;
-      changes.forEach(([beat, chord, root], ci) => {
-        const end = ci + 1 < changes.length ? changes[ci + 1][0] : 4;
-        const t = t0 + beat * BEAT, span = (end - beat) * BEAT;
-        chord.forEach((n, k) => ep(t + k * 0.035 + Math.random() * 0.01, n, 0.06, span * 0.9));
-        strings(t, chord, span);
-        bassNote(t + 0.02, root, span + 0.5);
-      });
+    const bar = 6 * EIGHTH;
+    BARS.forEach((name, i) => {
+      const t = i * bar, c = CH[name];
+      pad(t, c.slice(0, 3), bar);
+      bass(t, c[0]);
+      const r = c[0] + 12, fifth = c[2] + 12, third = c[1] + 24;
+      [r, fifth, third, fifth, third, fifth].forEach((n, k) => box(t + k * EIGHTH + 0.01, n, k === 0 ? 0.07 : 0.05, arpBus));
     });
-    MELODY.forEach(([bar, beat, n, len]) => lead(bar * BAR + beat * BEAT + (Math.random() - 0.5) * 0.012, n, len));
+    let at = 0;
+    MEL.forEach(([n, len]) => { box(at + (Math.random() - 0.5) * 0.012, n + 12, 0.2, melBus); at += len * EIGHTH; });
 
-    // fireplace: low rumble, soft hiss and irregular crackles
-    const fb = ctx.createBuffer(2, Math.ceil((L + TAIL) * SR), SR);
+    const nb = ctx.createBuffer(2, Math.ceil((L + TAIL) * SR), SR);
     for (let c = 0; c < 2; c++) {
-      const d = fb.getChannelData(c);
-      let brown = 0, burst = 0;
+      const d = nb.getChannelData(c);
+      let hiss = 0;
       for (let i = 0; i < d.length; i++) {
-        brown = (brown + (Math.random() * 2 - 1) * 0.02) * 0.995;
-        d[i] = brown * 0.5 + (Math.random() * 2 - 1) * 0.004;
-        if (burst > 0) burst--;
-        if (Math.random() < (burst > 0 ? 0.004 : 0.00025)) {
-          if (burst === 0 && Math.random() < 0.25) burst = Math.floor(SR * (0.05 + Math.random() * 0.2));
-          const amp = (0.04 + Math.random() * 0.3) * (Math.random() < 0.5 ? -1 : 1), k0 = 3 + Math.random() * 10;
-          for (let k = 0; k < 60 && i + k < d.length; k++) d[i + k] += amp * Math.exp(-k / k0) * (Math.random() * 0.6 + 0.4);
+        hiss = hiss * 0.96 + (Math.random() * 2 - 1) * 0.04;
+        d[i] = hiss * 0.05;
+        if (Math.random() < 0.00009) {
+          const amp = (0.05 + Math.random() * 0.2) * (Math.random() < 0.5 ? -1 : 1);
+          for (let k = 0; k < 24 && i + k < d.length; k++) d[i + k] += amp * Math.exp(-k / 4);
         }
       }
     }
-    const fire = ctx.createBufferSource(); fire.buffer = fb;
-    const ff = ctx.createBiquadFilter(); ff.type = "lowpass"; ff.frequency.value = 3800;
-    const fg = ctx.createGain(); fg.gain.value = 0.12;
-    fire.connect(ff); ff.connect(fg); fg.connect(ctx.destination); fire.start(0);
+    const crackle = ctx.createBufferSource(); crackle.buffer = nb;
+    const cf = ctx.createBiquadFilter(); cf.type = "bandpass"; cf.frequency.value = 2600; cf.Q.value = 0.6;
+    const cg = ctx.createGain(); cg.gain.value = 0.5;
+    crackle.connect(cf); cf.connect(cg); cg.connect(ctx.destination); crackle.start(0);
 
     const buf = await new Promise((res, rej) => {
       ctx.oncomplete = (e) => res(e.renderedBuffer);
