@@ -1,0 +1,948 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d2321">
+<title>聖誕許願桌</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap">
+<style>
+:root {
+  /* Concept: a night-time desk under a lamp. Home = two arched doors; wish = letter paper and pen; Santa = envelope flies in and lands on the desk. */
+  color-scheme: dark;
+  --night: #0d2321;
+  --night-hi: #1b4a43;
+  --desk: #35241b;
+  --desk-hi: #4d3427;
+  --paper: #f3ead6;
+  --paper-edge: #d9c9a6;
+  --ink: #1d2b4a;
+  --ink-soft: #5b6477;
+  --lamp: #f2b45c;
+  --berry: #a8282f;
+  --berry-hi: #cf4650;
+  --pine: #2d6a55;
+  --fg: #f1ead9;
+  --fg-soft: #b9c7bf;
+  --line: rgba(241, 234, 217, 0.2);
+  --font-display: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  --font-hand: "LXGW WenKai TC", "Kaiti TC", "BiauKai", "Noto Serif TC", serif;
+  --font-script: "Caveat", "Segoe Script", "Bradley Hand", cursive;
+  --font-ui: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--fg);
+  background-color: var(--night);
+  margin: 0;
+  padding-top: calc(20px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  min-height: 100vh;
+}
+body[data-scene="home"] {
+  background-color: var(--night);
+  background-image:
+    radial-gradient(ellipse 90% 45% at 50% 0%, var(--night-hi) 0%, transparent 70%),
+    linear-gradient(var(--night), #091817);
+}
+body[data-scene="desk"] {
+  background-color: var(--desk);
+  background-image:
+    radial-gradient(ellipse 90% 38% at 18% 0%, rgba(242, 180, 92, 0.3), transparent 72%),
+    repeating-linear-gradient(92deg, rgba(0, 0, 0, 0.08) 0 2px, transparent 2px 11px),
+    linear-gradient(var(--desk-hi), var(--desk));
+}
+
+.snow { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.75;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,.8), transparent),
+    radial-gradient(2px 2px at 130px 90px, rgba(255,255,255,.7), transparent),
+    radial-gradient(3px 3px at 225px 160px, rgba(255,255,255,.9), transparent),
+    radial-gradient(1.5px 1.5px at 70px 200px, rgba(255,255,255,.6), transparent);
+  background-size: 260px 260px;
+  animation: snow 22s linear infinite;
+}
+.snow::after { content: ""; position: absolute; inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 40px 60px, rgba(255,255,255,.55), transparent),
+    radial-gradient(2px 2px at 180px 20px, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.5px 1.5px at 100px 150px, rgba(255,255,255,.5), transparent);
+  background-size: 190px 190px;
+  animation: snow2 34s linear infinite;
+}
+@keyframes snow { to { background-position: -50px 260px; } }
+@keyframes snow2 { to { background-position: 30px 190px; } }
+
+.app { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+
+h1, h2 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--lamp); outline-offset: 3px; }
+
+/* ---------- Home ---------- */
+.hero { padding-top: 18px; text-align: left; }
+.eyebrow { font-family: var(--font-script); font-size: 1.7rem; font-weight: 500; color: var(--lamp); line-height: 1; }
+.hero h1 { font-size: clamp(2.4rem, 11vw, 3.6rem); font-weight: 900; letter-spacing: 0.04em; line-height: 1.15; margin-top: 6px; }
+.lead { color: var(--fg-soft); max-width: 30em; margin-top: 12px; text-wrap: pretty; }
+
+.doors { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 30px; }
+.door {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  aspect-ratio: 3 / 4.3; padding: 24px 10px 20px; text-align: center; text-decoration: none; color: var(--fg);
+  border-radius: 999px 999px 12px 12px; border: 2px solid rgba(241, 234, 217, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.door::after { content: ""; position: absolute; right: 14px; top: 58%; width: 11px; height: 11px; border-radius: 50%; background: var(--lamp); box-shadow: 0 0 10px var(--lamp); }
+.door:hover { transform: translateY(-4px); }
+.door:active { transform: translateY(0) scale(0.99); }
+.door-wish {
+  background: radial-gradient(ellipse 80% 55% at 50% 38%, rgba(242, 180, 92, 0.5), transparent 70%), linear-gradient(#3b2a1f, #281b13);
+  box-shadow: 0 0 36px rgba(242, 180, 92, 0.22);
+}
+.door-santa {
+  background: radial-gradient(ellipse 80% 55% at 50% 38%, rgba(207, 70, 80, 0.5), transparent 70%), linear-gradient(#3a1d21, #26121a);
+  box-shadow: 0 0 36px rgba(207, 70, 80, 0.22);
+}
+.door svg { width: 56px; height: auto; flex: none; }
+.door-latin { font-family: var(--font-script); font-size: clamp(1.7rem, 8vw, 2.2rem); font-weight: 700; line-height: 1; }
+.door-zh { font-size: 0.9rem; color: var(--fg-soft); letter-spacing: 0.12em; }
+.count { margin-top: 26px; color: var(--fg-soft); font-size: 0.92rem; text-align: center; min-height: 1.6em; }
+
+/* ---------- Shared ---------- */
+.back { display: inline-block; margin: 6px 0 14px; color: var(--fg-soft); text-decoration: none; font-size: 0.95rem; padding: 6px 0; }
+.back:hover { color: var(--fg); }
+
+.paper {
+  position: relative; color-scheme: light; color: var(--ink); background: var(--paper);
+  font-family: var(--font-hand); font-size: 1.1rem; line-height: 2.2;
+  padding: 34px 22px 30px; border-radius: 4px;
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.45), 0 2px 0 var(--paper-edge);
+  transform: rotate(-0.4deg);
+}
+.paper::before, .paper::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 7px;
+  background: repeating-linear-gradient(135deg, var(--berry) 0 12px, var(--paper) 12px 20px, var(--pine) 20px 32px, var(--paper) 32px 40px);
+}
+.paper::before { top: 0; border-radius: 4px 4px 0 0; }
+.paper::after { bottom: 0; border-radius: 0 0 4px 4px; }
+.dear { font-family: var(--font-script); font-size: 2.4rem; font-weight: 700; color: var(--berry); line-height: 1.2; margin-bottom: 4px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 48px; padding: 10px 22px; border-radius: 999px; border: 2px solid var(--berry);
+  background: var(--berry); color: #fff7ea; font-family: var(--font-display); font-weight: 700; font-size: 1rem; letter-spacing: 0.06em;
+  text-decoration: none; cursor: pointer; transition: background 0.15s ease, transform 0.15s ease;
+}
+.btn:hover { background: var(--berry-hi); border-color: var(--berry-hi); }
+.btn:active { transform: scale(0.98); }
+.btn[disabled] { opacity: 0.6; cursor: progress; }
+.btn.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+.btn.ghost:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--fg-soft); }
+.msg { min-height: 1.6em; color: var(--berry); font-family: var(--font-ui); font-size: 0.92rem; line-height: 1.5; margin: 6px 0; }
+.note { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 0.92rem; color: var(--fg); margin-bottom: 14px; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; justify-content: center; }
+
+/* ---------- Wish ---------- */
+.paper-wrap { position: relative; margin-top: 42px; }
+.pen { position: absolute; right: 10px; top: -48px; width: 34px; transform: rotate(26deg); filter: drop-shadow(0 6px 5px rgba(0,0,0,.45)); pointer-events: none; z-index: 2; }
+.ln { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.55rem; margin: 0; min-width: 0; }
+.ln > span { white-space: nowrap; }
+.ln input[type="text"] {
+  flex: 1 1 7rem; min-width: 0; font: inherit; color: var(--ink); background: transparent;
+  border: 0; border-bottom: 2px solid rgba(29, 43, 74, 0.35); border-radius: 0; padding: 0 0.2rem; line-height: 1.7; height: 2.2rem;
+}
+.ln input[type="text"]::placeholder, .block textarea::placeholder { color: rgba(29, 43, 74, 0.4); }
+.ln input[type="text"]:focus, .block textarea:focus { outline: none; border-color: var(--berry); background: rgba(168, 40, 47, 0.05); }
+.block { display: block; margin-top: 6px; }
+.block > span { display: block; }
+.block textarea {
+  width: 100%; font: inherit; line-height: 1.8; color: var(--ink); background: transparent; resize: vertical;
+  border: 2px solid rgba(29, 43, 74, 0.25); border-radius: 4px; padding: 6px 10px; min-height: 4.6rem;
+}
+.hint { font-family: var(--font-ui); font-size: 0.82rem; line-height: 1.5; color: var(--ink-soft); margin: 0 0 8px; }
+.stamps { display: inline-flex; gap: 0.5rem; }
+.stamps input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.stamps label {
+  display: inline-block; padding: 0 0.9rem; line-height: 1.9; border: 2px solid var(--berry); border-radius: 4px;
+  color: var(--berry); font-weight: 700; cursor: pointer; transition: background 0.15s ease, color 0.15s ease;
+}
+.stamps label[for="k-is"] { transform: rotate(-3deg); }
+.stamps label[for="k-isnot"] { transform: rotate(2deg); }
+.stamps input:checked + label { background: var(--berry); color: var(--paper); }
+.stamps input:focus-visible + label { outline: 3px solid var(--lamp); outline-offset: 2px; }
+.overwrite { font-family: var(--font-ui); font-size: 0.92rem; line-height: 1.5; background: rgba(242, 180, 92, 0.18); border: 1px solid var(--lamp); border-radius: 8px; padding: 12px 14px; margin: 8px 0; color: var(--ink); }
+.overwrite .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.mini { min-height: 40px; padding: 6px 16px; font-size: 0.9rem; }
+.mini.ghost { color: var(--ink); border-color: rgba(29, 43, 74, 0.35); }
+.send-row { display: flex; justify-content: center; margin-top: 14px; }
+.seal { width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e46a72, #8d1f27); box-shadow: inset 0 0 0 3px rgba(255,255,255,.18); flex: none; }
+
+.sent { text-align: center; padding-top: 10px; }
+.sent h2 { font-size: 1.8rem; font-weight: 900; margin: 6px 0 8px; }
+.sent p { color: var(--fg-soft); max-width: 28em; margin-inline: auto; text-wrap: pretty; }
+.namecard { display: inline-block; margin: 14px 0; padding: 6px 22px; border: 2px dashed var(--lamp); border-radius: 6px; color: var(--lamp) !important; font-family: var(--font-hand); font-size: 1.6rem; font-weight: 700; overflow-wrap: anywhere; }
+
+/* ---------- Santa ---------- */
+.ask { margin-top: 6px; }
+.ask .paper { line-height: 1.8; }
+.ask h2 { font-family: var(--font-script); font-size: 2.8rem; font-weight: 700; color: var(--berry); line-height: 1.1; }
+.ask label { display: block; font-weight: 700; margin-top: 10px; }
+.ask input[type="text"] {
+  display: block; width: 100%; margin-top: 4px; font: inherit; font-size: 1.2rem; color: var(--ink); background: transparent;
+  border: 0; border-bottom: 2px solid rgba(29, 43, 74, 0.4); padding: 4px 4px; height: 2.8rem;
+}
+.ask input[type="text"]:focus { outline: none; border-color: var(--berry); background: rgba(168, 40, 47, 0.05); }
+.ask .btn { width: 100%; margin-top: 8px; }
+
+.stage { overflow: hidden; text-align: center; padding: 40px 0 30px; min-height: 420px; }
+.stage-cap { color: var(--fg); font-family: var(--font-display); font-weight: 700; letter-spacing: 0.06em; min-height: 1.8em; margin-bottom: 36px; }
+.env-btn { display: block; margin: 0 auto; padding: 0; background: none; border: 0; cursor: pointer; color: inherit; -webkit-tap-highlight-color: transparent; }
+.env-btn[disabled] { cursor: default; }
+.env-wrap { display: inline-block; }
+.env-wrap.fly { animation: fly 2.4s cubic-bezier(0.22, 0.8, 0.3, 1) both; }
+.env-wrap.away { animation: away 1.1s ease-in forwards; }
+@keyframes fly {
+  0% { transform: translate(70vw, -90vh) rotate(38deg) scale(0.3); opacity: 0; }
+  15% { opacity: 1; }
+  68% { transform: translate(-5vw, 3vh) rotate(-9deg) scale(1.06); }
+  84% { transform: translate(1.5vw, -1.5vh) rotate(3deg) scale(0.98); }
+  100% { transform: translate(0, 0) rotate(-2deg) scale(1); }
+}
+@keyframes away { to { transform: translate(40vw, -70vh) rotate(24deg) scale(0.4); opacity: 0; } }
+
+.env { position: relative; width: min(78vw, 300px); aspect-ratio: 3 / 2; perspective: 900px; margin-top: 70px; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.45)); }
+.env > * { position: absolute; }
+.env-back { inset: 0; background: #b98f52; border-radius: 6px; z-index: 0; }
+.env-letter {
+  left: 8%; right: 8%; top: 8%; bottom: 8%; z-index: 2; border-radius: 3px; background: var(--paper);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 15px, rgba(29, 43, 74, 0.14) 15px 16px);
+  transition: transform 0.8s ease 0.3s;
+}
+.env-front { inset: 0; z-index: 3; background: linear-gradient(#d9b87c, #c9a56a); border-radius: 6px; clip-path: polygon(0 100%, 0 0, 50% 58%, 100% 0, 100% 100%); }
+.flap {
+  left: 0; right: 0; top: 0; height: 100%; z-index: 4; transform-origin: top center;
+  background: linear-gradient(#e2c58b, #cfa968); clip-path: polygon(0 0, 100% 0, 50% 58%);
+  transition: transform 0.6s ease, z-index 0s 0.3s;
+}
+.env .seal-wax {
+  left: 50%; top: 58%; width: 48px; height: 48px; margin: -24px 0 0 -24px; z-index: 5; border-radius: 50%;
+  display: grid; place-items: center; color: rgba(255, 235, 220, 0.85); font-size: 1.3rem;
+  background: radial-gradient(circle at 35% 30%, #e46a72, #8d1f27); box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4), inset 0 0 0 4px rgba(255, 255, 255, 0.12);
+  transition: opacity 0.3s ease 0.45s;
+}
+.env.open .flap { transform: rotateX(180deg); z-index: 1; }
+.env.open .env-letter { transform: translateY(-62%); }
+.env.open .seal-wax { opacity: 0; transition-delay: 0s; }
+.env.instant, .env.instant * { transition: none !important; }
+
+.from { text-align: center; color: var(--fg-soft); font-size: 0.92rem; margin: 4px 0 20px; }
+.reveal .paper { animation: unfold 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; transform-origin: top center; }
+@keyframes unfold { from { opacity: 0; transform: translateY(40px) scaleY(0.6) rotate(-0.4deg); } to { opacity: 1; transform: translateY(0) scaleY(1) rotate(-0.4deg); } }
+.reads { line-height: 2; font-size: 1.15rem; }
+.reads .ln { display: block; margin: 0 0 0.3rem; }
+.reads .ln > span { white-space: normal; }
+.reads .pre { color: var(--ink-soft); }
+.reads .val { font-weight: 700; border-bottom: 2px solid rgba(168, 40, 47, 0.55); padding: 0 0.2em; overflow-wrap: anywhere; }
+.reads .val.blank { font-weight: 400; opacity: 0.6; border-bottom-style: dashed; }
+.reads .note-line { margin-top: 0.8rem; padding-top: 0.6rem; border-top: 1px dashed rgba(29, 43, 74, 0.3); overflow-wrap: anywhere; }
+.reads .sign { font-family: var(--font-script); font-size: 2rem; color: var(--berry); text-align: right; margin-top: 8px; line-height: 1.2; }
+
+/* ---------- Save sheet & toast ---------- */
+.sheet {
+  position: fixed; inset: 0; z-index: 20; overflow-y: auto; background: rgba(6, 14, 13, 0.88);
+  padding: calc(16px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.sheet-in { max-width: 460px; margin: 0 auto; text-align: center; }
+.sheet h2 { font-size: 1.3rem; margin-bottom: 6px; }
+.sheet p { color: var(--fg-soft); font-size: 0.92rem; margin-bottom: 12px; }
+.sheet img { display: block; width: 100%; height: auto; border-radius: 4px; box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6); background: var(--paper); min-height: 120px; -webkit-touch-callout: default; user-select: auto; }
+.toast-box { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex; justify-content: center; pointer-events: none; padding: 0 16px calc(18px + env(safe-area-inset-bottom, 0px)); }
+#toast { background: rgba(10, 24, 22, 0.94); border: 1px solid var(--line); color: var(--fg); padding: 10px 18px; border-radius: 999px; font-size: 0.92rem; opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; }
+#toast.show { opacity: 1; transform: translateY(0); }
+
+/* ---------- Setup ---------- */
+.steps { margin: 22px 0 0; padding-left: 1.3em; color: var(--fg); display: grid; gap: 12px; }
+.steps li::marker { color: var(--lamp); font-weight: 700; }
+.steps small { display: block; color: var(--fg-soft); }
+.steps code, .code { font-family: ui-monospace, Menlo, monospace; font-size: 0.85em; background: rgba(0,0,0,.35); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere; }
+.setup-card { margin-top: 26px; }
+.setup-card label { display: block; font-weight: 700; margin-top: 8px; }
+.setup-card input[type="text"] {
+  display: block; width: 100%; margin: 4px 0 6px; font: 0.95rem var(--font-ui); color: var(--ink); background: rgba(29,43,74,.06);
+  border: 1px solid rgba(29, 43, 74, 0.35); border-radius: 6px; padding: 10px 12px; min-height: 46px;
+}
+.setup-card input[type="text"]:focus { outline: none; border-color: var(--berry); }
+.setup-card .btn { width: 100%; margin-top: 6px; }
+.setup-card .btn.ghost { color: var(--ink); border-color: rgba(29,43,74,.35); }
+.sharebox { margin-top: 18px; padding-top: 14px; border-top: 1px dashed rgba(29,43,74,.3); }
+.footlink { margin-top: 28px; text-align: center; font-size: 0.85rem; }
+.footlink a { color: var(--fg-soft); }
+
+@media (min-width: 560px) {
+  body { padding-top: 36px; }
+  .paper { padding-inline: 38px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transition-delay: 0s !important; }
+  .snow, .snow::after { animation: none; }
+}
+</style>
+</head>
+<body data-scene="home">
+<div class="snow" aria-hidden="true"></div>
+
+<main class="app">
+
+  <!-- 入口 -->
+  <section id="screen-home">
+    <header class="hero">
+      <p class="eyebrow">Christmas Gift Exchange</p>
+      <h1>聖誕許願桌</h1>
+      <p class="lead">先寫一封信，許下想收到的禮物。再當一次聖誕老人，拆開別人的願望。</p>
+    </header>
+    <nav class="doors" aria-label="選擇入口">
+      <a class="door door-wish" href="#wish">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#f2b45c" d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 16.8 5.9 20.4l1.5-6.8L2.2 9l6.9-.7z"/></svg>
+        <span class="door-latin">make a wish</span>
+        <span class="door-zh">寫信許願</span>
+      </a>
+      <a class="door door-santa" href="#santa">
+        <svg viewBox="0 0 64 56" aria-hidden="true"><path fill="#cf4650" d="M8 44C14 20 30 8 52 12 46 20 46 30 56 44z"/><rect x="4" y="42" width="56" height="12" rx="6" fill="#f4efe2"/><circle cx="54" cy="12" r="7" fill="#f4efe2"/></svg>
+        <span class="door-latin">I am Santa</span>
+        <span class="door-zh">拆一封信</span>
+      </a>
+    </nav>
+    <p id="count" class="count" aria-live="polite">正在數桌上的信…</p>
+    <p class="footlink"><a href="#setup">主辦人：取得分享連結</a></p>
+  </section>
+
+  <!-- make a wish -->
+  <section id="screen-wish" hidden>
+    <a class="back" href="#home">← 回到入口</a>
+
+    <div id="wishPaper" class="paper-wrap">
+      <svg class="pen" viewBox="0 0 40 200" aria-hidden="true">
+        <rect x="10" y="6" width="20" height="124" rx="9" fill="#1b2a41"/>
+        <rect x="10" y="44" width="20" height="7" fill="#c9a24a"/>
+        <path d="M10 130h20l-6 36h-8z" fill="#c9a24a"/>
+        <path d="M16 166l4 28 4-28z" fill="#e8dcc0"/>
+      </svg>
+      <form id="wishForm" class="paper" autocomplete="off" novalidate>
+        <p class="dear">Dear Santa,</p>
+
+        <label class="ln"><span>我是</span><input type="text" id="f-name" maxlength="20" placeholder="暱稱、本名或暗號"></label>
+        <p class="hint">請記住這個名字，之後抽信時要用它確認身分。</p>
+
+        <div class="ln" role="radiogroup" aria-label="禮物是不是特定的物品">
+          <span>我想要收到的禮物</span>
+          <span class="stamps">
+            <input type="radio" name="kind" id="k-is" value="is"><label for="k-is">是</label>
+            <input type="radio" name="kind" id="k-isnot" value="isnot"><label for="k-isnot">不是</label>
+          </span>
+          <span>特定的物品</span>
+        </div>
+
+        <label class="ln"><span>我希望他是</span><input type="text" id="f-style" maxlength="40" placeholder="例：復古、北歐、毛茸茸"><span>風格</span></label>
+        <label class="ln"><span>希望他是</span><input type="text" id="f-color" maxlength="40" placeholder="例：霧藍、酒紅"><span>顏色</span></label>
+        <label class="ln"><span>我希望他帶來的作用是</span><input type="text" id="f-effect" maxlength="40" placeholder="例：讓早晨沒那麼難"></label>
+        <label class="ln"><span>另外，他絕對不是</span><input type="text" id="f-never" maxlength="40" placeholder="例：香氛蠟燭"></label>
+
+        <label class="block"><span>備注</span><textarea id="f-note" rows="2" maxlength="120" placeholder="想多說的話，都可以寫在這裡"></textarea></label>
+        <p class="hint">可以留下本名，也可以留下暗號，一切看你想要什麼。</p>
+
+        <div id="wishMsg" class="msg" role="alert"></div>
+        <div id="overwrite" class="overwrite" hidden>
+          <span id="overwriteText"></span>
+          <div class="row">
+            <button type="button" class="btn mini" id="overwriteYes">取代舊信</button>
+            <button type="button" class="btn mini ghost" id="overwriteNo">改個名字</button>
+          </div>
+        </div>
+        <div class="send-row"><button type="submit" class="btn" id="sendBtn"><span class="seal" aria-hidden="true"></span>封上蠟印，寄出</button></div>
+      </form>
+    </div>
+
+    <div id="sent" class="sent" hidden>
+      <div id="sentStage" class="stage" style="min-height:300px;padding:10px 0 0"></div>
+      <h2>信寄出去了</h2>
+      <p>聖誕老人會在抽信時收到它。你的名字是</p>
+      <p class="namecard" id="sentName"></p>
+      <p>之後到「I am Santa」輸入這個名字，就能拆別人的信，而且不會抽到自己的。</p>
+      <div class="actions">
+        <a class="btn" href="#santa">去當聖誕老人</a>
+        <a class="btn ghost" href="#home">回到入口</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- I am Santa -->
+  <section id="screen-santa" hidden>
+    <a class="back" href="#home">← 回到入口</a>
+
+    <div id="santaAsk" class="ask">
+      <form id="santaForm" class="paper" autocomplete="off" novalidate>
+        <h2>I am Santa</h2>
+        <p class="hint" style="margin-top:6px">先確認你是誰，系統會幫你避開自己的那一封。</p>
+        <label for="santaName">你許願時寫在「我是」後面的名字</label>
+        <input type="text" id="santaName" maxlength="20" placeholder="輸入你的名字或暗號">
+        <div id="santaMsg" class="msg" role="alert"></div>
+        <button type="submit" class="btn" id="drawBtn">請馴鹿送信</button>
+        <p class="hint" style="margin:12px 0 0">已經抽過的人再輸入一次，會收到同一封信。</p>
+      </form>
+    </div>
+
+    <div id="stage" class="stage" hidden>
+      <p id="stageCap" class="stage-cap" aria-live="polite">有一封信正在飛過來…</p>
+      <button type="button" id="envBtn" class="env-btn" aria-label="拆開這封信" disabled></button>
+    </div>
+
+    <div id="reveal" class="reveal" hidden>
+      <p class="from">這封信來自一位正在等禮物的人</p>
+      <div id="letter" class="paper reads"></div>
+      <div class="actions">
+        <button type="button" class="btn" id="saveBtn">保存紀錄</button>
+        <a class="btn ghost" href="#home">回到入口</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 主辦人設定 -->
+  <section id="screen-setup" hidden>
+    <header class="hero">
+      <p class="eyebrow">Setup</p>
+      <h1>先接上信箱</h1>
+      <p class="lead">大家的願望信要存在一個共用的地方。這個網頁用免費的 Firebase 當信箱，主辦人設定一次就好。參加者請向主辦人索取完整的分享連結。</p>
+    </header>
+    <ol class="steps">
+      <li>用 Google 帳號登入 <span class="code">console.firebase.google.com</span>，按「建立專案」，名稱隨意，Google Analytics 可以關閉。</li>
+      <li>左側選單點「Build」，再點「Realtime Database」，按「建立資料庫」。位置選 Singapore，安全性規則選「以測試模式啟動」。<small>選項名稱可能和這裡略有不同。測試模式約 30 天有效，辦完活動後可以直接刪除專案。</small></li>
+      <li>資料庫頁面上方有一串網址，長得像 <span class="code">https://專案名-default-rtdb.…firebasedatabase.app</span>。複製後貼到下面。</li>
+    </ol>
+    <form id="setupForm" class="paper setup-card" autocomplete="off" novalidate>
+      <label for="dbUrl">Realtime Database 網址</label>
+      <input type="text" id="dbUrl" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="https://…firebasedatabase.app">
+      <div id="setupMsg" class="msg" role="alert"></div>
+      <p id="fileWarn" class="hint" hidden>目前是直接開檔案。要讓朋友使用，請先把這個檔案放到網路上（例如 Netlify Drop 或 GitHub Pages），再用那個網址開啟這一頁。</p>
+      <button type="submit" class="btn" id="setupBtn">測試並產生分享連結</button>
+      <div id="shareBox" class="sharebox" hidden>
+        <label for="shareLink">把這個連結傳給所有參加者</label>
+        <input type="text" id="shareLink" readonly>
+        <button type="button" class="btn" id="copyBtn">複製連結</button>
+        <button type="button" class="btn ghost" id="startBtn">我先去看看</button>
+      </div>
+    </form>
+  </section>
+
+</main>
+
+<div id="sheet" class="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet-in">
+    <h2 id="sheetTitle">把這封信存起來</h2>
+    <p id="sheetHelp">正在裝訂信紙…</p>
+    <img id="sheetImg" alt="願望信的圖片" hidden>
+    <div class="actions">
+      <button type="button" class="btn" id="sheetSave" hidden>儲存到手機</button>
+      <button type="button" class="btn ghost" id="sheetClose">關閉</button>
+    </div>
+  </div>
+</div>
+<div class="toast-box"><div id="toast" role="status" aria-live="polite"></div></div>
+
+<script>
+(() => {
+"use strict";
+const $ = (id) => document.getElementById(id);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+function rand() {
+  try { return crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296; } catch (e) { return Math.random(); }
+}
+
+/* 主辦人也可以直接把 Firebase 網址寫在這裡，之後就不用再貼一次 */
+const CONFIG_DB_URL = "https://christmas-event-fec0c-default-rtdb.asia-southeast1.firebasedatabase.app";
+const DB_RE = /^https:\/\/[a-z0-9.-]+\.(firebaseio\.com|firebasedatabase\.app)\/?$/i;
+
+/*PURE-START*/
+function norm(s) { return String(s || "").normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase(); }
+// Firebase keys cannot hold most punctuation, so a name becomes hex of its UTF-8 bytes.
+function keyOf(name) {
+  const bytes = new TextEncoder().encode(norm(name));
+  let h = "k";
+  for (const b of bytes) h += b.toString(16).padStart(2, "0");
+  return h;
+}
+// wishKeys: all wish ids. drawMap: santaKey -> wishKey already drawn. Never returns santaKey.
+function pickWish(wishKeys, drawMap, santaKey, r) {
+  const prev = drawMap[santaKey];
+  if (prev && prev !== santaKey && wishKeys.includes(prev)) return { key: prev, again: true };
+  const cands = wishKeys.filter((k) => k !== santaKey);
+  if (!cands.length) return null;
+  const count = {};
+  cands.forEach((k) => { count[k] = 0; });
+  Object.keys(drawMap).forEach((s) => { const k = drawMap[s]; if (k in count) count[k]++; });
+  const min = Math.min.apply(null, cands.map((k) => count[k]));
+  const pool = cands.filter((k) => count[k] === min);
+  return { key: pool[Math.floor(r() * pool.length)], again: false };
+}
+function letterLines(d) {
+  const kind = d.kind === "is" ? "是" : d.kind === "isnot" ? "不是" : "？";
+  const or = (v, fb) => (v && String(v).trim() ? { val: String(v).trim(), blank: false } : { val: fb, blank: true });
+  return [
+    Object.assign({ pre: "我是", suf: "" }, or(d.name, "（匿名）")),
+    { pre: "我想要收到的禮物", val: kind, suf: "特定的物品", blank: false },
+    Object.assign({ pre: "我希望他是", suf: "風格" }, or(d.style, "（交給你決定）")),
+    Object.assign({ pre: "希望他是", suf: "顏色" }, or(d.color, "（交給你決定）")),
+    Object.assign({ pre: "我希望他帶來的作用是", suf: "" }, or(d.effect, "（交給你決定）")),
+    Object.assign({ pre: "另外，他絕對不是", suf: "" }, or(d.never, "（沒有地雷）")),
+  ];
+}
+/*PURE-END*/
+
+/*FB-START*/
+let DB = "";
+const fb = {
+  async req(method, path, body, query) {
+    const url = DB + "/" + path + ".json" + (query ? "?" + query : "");
+    const init = { method: method, cache: "no-store" };
+    if (body !== undefined) { init.body = JSON.stringify(body); init.headers = { "Content-Type": "application/json" }; }
+    let res;
+    try { res = await fetch(url, init); } catch (e) { throw { code: "network" }; }
+    if (res.status === 401 || res.status === 403) throw { code: "denied" };
+    if (!res.ok) throw { code: "http", status: res.status };
+    return res.json();
+  },
+  getWish(key) { return this.req("GET", "wishes/" + key); },
+  async allWishes() { return (await this.req("GET", "wishes")) || {}; },
+  async allDraws() { return (await this.req("GET", "draws")) || {}; },
+  setWish(key, data) { return this.req("PUT", "wishes/" + key, data); },
+  setDraw(key, data) { return this.req("PUT", "draws/" + key, data); },
+  delDraw(key) { return this.req("DELETE", "draws/" + key); },
+  async countWishes() { return Object.keys((await this.req("GET", "wishes", undefined, "shallow=true")) || {}).length; },
+};
+// Picks a wish for santaKey. Writes the claim, then re-reads: if someone with an earlier claim holds the
+// same wish and a spare one exists, give it up and pick again. Returns null when nobody else has wished.
+async function drawFor(myKey, rnd, pause) {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const [wishes, draws] = await Promise.all([fb.allWishes(), fb.allDraws()]);
+    const drawMap = {};
+    Object.keys(draws).forEach((s) => { const v = draws[s]; if (v && v.wishKey) drawMap[s] = v.wishKey; });
+    const pick = pickWish(Object.keys(wishes), drawMap, myKey, rnd);
+    if (!pick) return null;
+    if (pick.again) return { again: true, data: wishes[pick.key] };
+    const at = Date.now();
+    await fb.setDraw(myKey, { wishKey: pick.key, at: at });
+    if (attempt === 5) return { again: false, data: wishes[pick.key] };
+    await pause(350);
+    const after = await fb.allDraws();
+    const rival = Object.keys(after).some((s) => s !== myKey && after[s] && after[s].wishKey === pick.key &&
+      (after[s].at < at || (after[s].at === at && s < myKey)));
+    if (!rival) return { again: false, data: wishes[pick.key] };
+    const taken = new Set(Object.keys(after).map((s) => after[s] && after[s].wishKey));
+    const spare = Object.keys(wishes).filter((k) => k !== myKey && !taken.has(k));
+    if (!spare.length) return { again: false, data: wishes[pick.key] };
+    await fb.delDraw(myKey);
+  }
+  return null;
+}
+/*FB-END*/
+
+let current = null; // the letter being read
+let sentShown = false;
+
+/* ---------- small helpers ---------- */
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+let toastTimer = 0;
+function toast(t) {
+  const n = $("toast");
+  n.textContent = t;
+  n.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => n.classList.remove("show"), 2800);
+}
+function dbMsg(err) {
+  const c = err && err.code;
+  if (c === "denied") return "信箱不讓我們讀寫。請主辦人檢查 Firebase 資料庫的規則，要是「測試模式」。";
+  if (c === "network") return "連不上信箱，請檢查網路後再試一次。";
+  return "信箱暫時出了點問題，請稍後再試一次。";
+}
+function envHTML() {
+  return '<div class="env"><div class="env-back"></div><div class="env-letter"></div><div class="env-front"></div><div class="flap"></div><div class="seal-wax" aria-hidden="true">✦</div></div>';
+}
+function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* private mode */ } }
+function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+/* ---------- routing ---------- */
+const SCREENS = ["home", "wish", "santa", "setup"];
+function route() {
+  const h = location.hash.replace("#", "");
+  let name = SCREENS.indexOf(h) >= 0 ? h : "home";
+  if (!DB) name = "setup";
+  SCREENS.forEach((s) => { $("screen-" + s).hidden = s !== name; });
+  document.body.dataset.scene = name === "home" || name === "setup" ? "home" : "desk";
+  window.scrollTo(0, 0);
+  if (name === "home") refreshCount();
+  if (name === "wish") enterWish();
+  if (name === "santa") enterSanta();
+  if (name === "setup") enterSetup();
+}
+window.addEventListener("hashchange", route);
+
+/* ---------- home: count ---------- */
+async function refreshCount() {
+  const box = $("count");
+  if (!DB) return;
+  try {
+    const n = await fb.countWishes();
+    box.textContent = n ? "桌上已有 " + n + " 封願望信" : "桌上還沒有信，當第一個許願的人吧";
+  } catch (e) {
+    box.textContent = "暫時讀不到信箱。";
+  }
+}
+setInterval(() => { if (!document.hidden && !$("screen-home").hidden) refreshCount(); }, 20000);
+
+/* ---------- setup (organizer) ---------- */
+function shareLinkFor(url) {
+  return location.href.split("#")[0].split("?")[0] + "?db=" + encodeURIComponent(url);
+}
+function enterSetup() {
+  $("fileWarn").hidden = location.protocol !== "file:";
+  $("dbUrl").value = DB || "";
+  $("setupMsg").textContent = "";
+  if (DB) showShare(DB); else $("shareBox").hidden = true;
+}
+function showShare(url) {
+  $("shareLink").value = shareLinkFor(url);
+  $("shareBox").hidden = false;
+}
+$("setupForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const msg = $("setupMsg"), btn = $("setupBtn");
+  const raw = $("dbUrl").value.trim().replace(/\/+$/, "");
+  msg.textContent = "";
+  if (!DB_RE.test(raw)) { msg.textContent = "網址看起來不對。它應該長得像 https://xxxx-default-rtdb.…firebasedatabase.app"; return; }
+  const prev = DB;
+  btn.disabled = true;
+  DB = raw;
+  try {
+    await fb.req("GET", "", undefined, "shallow=true");
+    store("xmasDb", raw);
+    showShare(raw);
+    msg.textContent = "";
+    toast("信箱接好了");
+  } catch (err) {
+    DB = prev;
+    msg.textContent = err && err.code === "denied"
+      ? "連得到，但被擋下來了。請到 Realtime Database 的「規則」分頁，確認讀寫都是 true（測試模式）。"
+      : "連不上這個網址，請確認有複製完整。";
+  } finally {
+    btn.disabled = false;
+  }
+});
+$("copyBtn").addEventListener("click", async () => {
+  const inp = $("shareLink");
+  try { await navigator.clipboard.writeText(inp.value); toast("已複製連結"); }
+  catch (e) { inp.focus(); inp.select(); toast("請長按選取後複製"); }
+});
+$("shareLink").addEventListener("focus", (e) => e.target.select());
+$("startBtn").addEventListener("click", () => { location.hash = "#home"; route(); });
+
+/* ---------- make a wish ---------- */
+function resetWish() {
+  ["f-name", "f-style", "f-color", "f-effect", "f-never", "f-note"].forEach((id) => { $(id).value = ""; });
+  document.querySelectorAll('input[name="kind"]').forEach((r) => { r.checked = false; });
+  $("wishMsg").textContent = "";
+  $("overwrite").hidden = true;
+  $("sent").hidden = true;
+  $("wishPaper").hidden = false;
+  $("sentStage").textContent = "";
+  sentShown = false;
+}
+function enterWish() { if (sentShown) resetWish(); }
+
+function readWish() {
+  const checked = document.querySelector('input[name="kind"]:checked');
+  return {
+    name: $("f-name").value.trim().replace(/\s+/g, " "),
+    kind: checked ? checked.value : "",
+    style: $("f-style").value.trim(),
+    color: $("f-color").value.trim(),
+    effect: $("f-effect").value.trim(),
+    never: $("f-never").value.trim(),
+    note: $("f-note").value.trim(),
+  };
+}
+async function sendWish(force) {
+  const msg = $("wishMsg"), btn = $("sendBtn");
+  msg.textContent = "";
+  const w = readWish();
+  if (!w.name) { msg.textContent = "先寫上「我是」後面的名字，聖誕老人才知道信是誰寫的。"; $("f-name").focus(); return; }
+  if (!w.kind) { msg.textContent = "請選擇禮物是不是特定的物品。"; return; }
+  btn.disabled = true;
+  try {
+    const key = keyOf(w.name);
+    if (!force && (await fb.getWish(key))) {
+      $("overwriteText").textContent = "「" + w.name + "」已經寫過一封信了。要用這封取代舊的嗎？";
+      $("overwrite").hidden = false;
+      return;
+    }
+    await fb.setWish(key, { name: w.name, kind: w.kind, style: w.style, color: w.color, effect: w.effect, never: w.never, note: w.note, at: Date.now() });
+    $("overwrite").hidden = true;
+    playSent(w.name);
+  } catch (err) {
+    msg.textContent = dbMsg(err);
+  } finally {
+    btn.disabled = false;
+  }
+}
+async function playSent(name) {
+  sentShown = true;
+  $("wishPaper").hidden = true;
+  $("sentName").textContent = name;
+  const stage = $("sentStage");
+  stage.innerHTML = '<div class="env-wrap">' + envHTML() + "</div>";
+  const wrap = stage.firstChild, env = wrap.firstChild;
+  env.classList.add("instant", "open");
+  $("sent").hidden = false;
+  window.scrollTo(0, 0);
+  void env.offsetWidth;
+  env.classList.remove("instant");
+  await sleep(250);
+  env.classList.remove("open");
+  await sleep(1500);
+  wrap.classList.add("away");
+}
+
+/* ---------- I am Santa ---------- */
+function enterSanta() {
+  $("santaMsg").textContent = "";
+  $("stage").hidden = true;
+  $("reveal").hidden = true;
+  $("santaAsk").hidden = false;
+  $("drawBtn").disabled = false;
+  $("drawBtn").textContent = "請馴鹿送信";
+}
+async function startDraw() {
+  const msg = $("santaMsg"), btn = $("drawBtn");
+  msg.textContent = "";
+  const name = $("santaName").value.trim();
+  if (!name) { msg.textContent = "請輸入你許願時寫的名字。"; $("santaName").focus(); return; }
+  btn.disabled = true;
+  btn.textContent = "馴鹿出發中…";
+  try {
+    const myKey = keyOf(name);
+    if (!(await fb.getWish(myKey))) {
+      msg.textContent = "找不到「" + name + "」寫的願望信。請輸入「我是」後面的名字，或先到 make a wish 寫一封。";
+      return;
+    }
+    const result = await drawFor(myKey, rand, sleep);
+    if (!result) { msg.textContent = "桌上還沒有其他人的信。等朋友們寫完再來吧。"; return; }
+    current = result.data;
+    playMail(result.again);
+  } catch (err) {
+    msg.textContent = dbMsg(err);
+  } finally {
+    if (!$("santaAsk").hidden) { btn.disabled = false; btn.textContent = "請馴鹿送信"; }
+  }
+}
+async function playMail(again) {
+  $("santaAsk").hidden = true;
+  $("reveal").hidden = true;
+  $("stage").hidden = false;
+  window.scrollTo(0, 0);
+  const cap = $("stageCap"), btn = $("envBtn");
+  cap.textContent = again ? "這是寄給你的那一封，再送一次…" : "有一封信正在飛過來…";
+  btn.disabled = true;
+  btn.innerHTML = '<div class="env-wrap fly">' + envHTML() + "</div>";
+  const env = btn.querySelector(".env");
+  await sleep(2600);
+  cap.textContent = "信送到了。點一下，拆開它";
+  btn.disabled = false;
+  btn.focus({ preventScroll: true });
+  btn.onclick = async () => {
+    btn.disabled = true;
+    btn.onclick = null;
+    cap.textContent = "…";
+    env.classList.add("open");
+    await sleep(1500);
+    showLetter();
+  };
+}
+function renderLetter(box, d) {
+  box.textContent = "";
+  box.append(el("p", "dear", "Dear Santa,"));
+  letterLines(d).forEach((l) => {
+    const p = el("p", "ln");
+    p.append(el("span", "pre", l.pre), " ", el("span", "val" + (l.blank ? " blank" : ""), l.val));
+    if (l.suf) p.append(" ", el("span", "pre", l.suf));
+    box.append(p);
+  });
+  if (d.note && String(d.note).trim()) {
+    const p = el("p", "ln note-line");
+    p.append(el("span", "pre", "備注："), el("span", "", String(d.note).trim()));
+    box.append(p);
+  }
+  box.append(el("p", "sign", "Merry Christmas"));
+}
+function showLetter() {
+  renderLetter($("letter"), current);
+  $("stage").hidden = true;
+  $("reveal").hidden = false;
+  window.scrollTo(0, 0);
+}
+
+/* ---------- save as image ---------- */
+let sheetUrl = "", sheetBlob = null;
+function closeSheet() {
+  $("sheet").hidden = true;
+  if (sheetUrl) { URL.revokeObjectURL(sheetUrl); sheetUrl = ""; }
+  sheetBlob = null;
+  $("sheetImg").hidden = true;
+  $("sheetImg").removeAttribute("src");
+}
+async function openSheet() {
+  if (!current) return;
+  $("sheet").hidden = false;
+  $("sheetHelp").textContent = "正在裝訂信紙…";
+  $("sheetImg").hidden = true;
+  $("sheetSave").hidden = true;
+  $("sheetClose").focus();
+  try {
+    const blob = await makePng(current);
+    if ($("sheet").hidden) return;
+    sheetBlob = blob;
+    sheetUrl = URL.createObjectURL(blob);
+    $("sheetImg").src = sheetUrl;
+    $("sheetImg").hidden = false;
+    $("sheetHelp").textContent = "按「儲存到手機」後選「儲存圖片」，或直接長按圖片存到相簿。";
+    $("sheetSave").hidden = false;
+  } catch (e) {
+    $("sheetHelp").textContent = "圖片做不出來，請改用手機的截圖功能。";
+  }
+}
+async function saveSheet() {
+  if (!sheetBlob) return;
+  try {
+    const file = new File([sheetBlob], "santa-wish.png", { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: "聖誕願望信" });
+      return;
+    }
+  } catch (e) {
+    if (e && e.name === "AbortError") return;
+  }
+  const a = document.createElement("a");
+  a.href = sheetUrl; a.download = "santa-wish.png";
+  document.body.appendChild(a); a.click(); a.remove();
+  toast("已下載圖片。也可以長按圖片存到相簿");
+}
+
+const probe = document.createElement("canvas").getContext("2d");
+function layoutText(lines, maxW, fs, lh, f) {
+  const ops = [];
+  let y = 0;
+  const gap = fs * 0.3;
+  lines.forEach((p) => {
+    let x = 0;
+    y += lh;
+    [[p.pre, false], [p.val, true], [p.suf, false]].forEach((seg, i) => {
+      const s = seg[0], isVal = seg[1];
+      if (!s) return;
+      if (isVal && p.pre) x += gap;
+      if (i === 2 && x > 0) x += gap;
+      probe.font = f(isVal ? 700 : 400, fs);
+      for (const ch of s) {
+        const w = probe.measureText(ch).width;
+        if (x + w > maxW && ch !== " ") { x = 0; y += lh; }
+        ops.push({ ch: ch, x: x, y: y, isVal: isVal, w: w });
+        x += w;
+      }
+    });
+    y += lh * 0.35;
+  });
+  return { ops: ops, height: y };
+}
+async function makePng(d) {
+  const lines = letterLines(d);
+  if (d.note && String(d.note).trim()) lines.push({ pre: "備注：", val: String(d.note).trim(), suf: "", blank: false });
+  const fam = '"LXGW WenKai TC","Kaiti TC","BiauKai","Noto Serif TC",serif';
+  const f = (w, px) => w + " " + px + "px " + fam;
+  const script = '700 120px Caveat,"Segoe Script","Bradley Hand",cursive';
+  const sample = lines.map((l) => l.pre + l.val + l.suf).join("") + "Dear Santa, Merry Christmas";
+  try {
+    await Promise.race([
+      Promise.all([document.fonts.load(f(400, 46), sample), document.fonts.load(f(700, 46), sample), document.fonts.load(script, "Dear Santa, Merry Christmas")]),
+      sleep(2500),
+    ]);
+  } catch (e) { /* fall back to system fonts */ }
+  const W = 1080, M = 110, FS = 46, LH = 82;
+  const lay = layoutText(lines, W - M * 2, FS, LH, f);
+  const top = 360, foot = 230;
+  const H = Math.max(1350, top + lay.height + foot);
+  const cv = document.createElement("canvas");
+  cv.width = W; cv.height = H;
+  const g = cv.getContext("2d");
+  g.fillStyle = "#f3ead6"; g.fillRect(0, 0, W, H);
+  const stripe = (y0) => {
+    for (let x = -40, i = 0; x < W + 40; x += 36, i++) {
+      g.fillStyle = i % 2 ? "#2d6a55" : "#a8282f";
+      g.beginPath(); g.moveTo(x, y0); g.lineTo(x + 24, y0); g.lineTo(x + 38, y0 + 26); g.lineTo(x + 14, y0 + 26); g.closePath(); g.fill();
+    }
+  };
+  stripe(0); stripe(H - 26);
+  g.strokeStyle = "#d9c9a6"; g.lineWidth = 3; g.strokeRect(50, 66, W - 100, H - 132);
+  g.textBaseline = "alphabetic"; g.textAlign = "left";
+  g.fillStyle = "#a8282f"; g.font = script; g.fillText("Dear Santa,", M, 240);
+  lay.ops.forEach((o) => {
+    g.font = f(o.isVal ? 700 : 400, FS);
+    g.fillStyle = o.isVal ? "#1d2b4a" : "#5b6477";
+    g.fillText(o.ch, M + o.x, top + o.y);
+    if (o.isVal) { g.fillStyle = "rgba(168,40,47,0.55)"; g.fillRect(M + o.x, top + o.y + 10, o.w, 3); }
+  });
+  g.textAlign = "center"; g.fillStyle = "#a8282f"; g.font = '700 88px Caveat,"Segoe Script","Bradley Hand",cursive';
+  g.fillText("Merry Christmas", W / 2, H - 120);
+  return new Promise((res, rej) => cv.toBlob((b) => (b ? res(b) : rej(new Error("toBlob"))), "image/png"));
+}
+
+/* ---------- wiring ---------- */
+$("wishForm").addEventListener("submit", (e) => { e.preventDefault(); sendWish(false); });
+$("overwriteYes").addEventListener("click", () => sendWish(true));
+$("overwriteNo").addEventListener("click", () => { $("overwrite").hidden = true; $("f-name").focus(); $("f-name").select(); });
+$("f-name").addEventListener("input", () => { $("overwrite").hidden = true; });
+$("santaForm").addEventListener("submit", (e) => { e.preventDefault(); startDraw(); });
+$("saveBtn").addEventListener("click", openSheet);
+$("sheetSave").addEventListener("click", saveSheet);
+$("sheetClose").addEventListener("click", closeSheet);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("sheet").hidden) closeSheet(); });
+
+/* ---------- start ---------- */
+(function init() {
+  const fromLink = new URLSearchParams(location.search).get("db");
+  const candidate = (fromLink || load("xmasDb") || CONFIG_DB_URL || "").trim().replace(/\/+$/, "");
+  if (DB_RE.test(candidate)) {
+    DB = candidate;
+    if (fromLink) store("xmasDb", candidate);
+  }
+  route();
+})();
+})();
+</script>
+</body>
+</html>
