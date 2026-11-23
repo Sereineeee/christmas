@@ -214,7 +214,8 @@ a { color: inherit; }
 .overwrite .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
 .mini { min-height: 40px; padding: 6px 18px; font-size: 0.85rem; }
 .mini.ghost { color: var(--ink); border-color: rgba(34, 28, 23, 0.35); background: transparent; }
-.send-row { display: flex; justify-content: center; margin-top: 16px; }
+.final-note { font-family: var(--font-ui); font-size: 0.85rem; line-height: 1.6; color: var(--wine); text-align: center; margin-top: 18px; padding-top: 12px; border-top: 1px solid rgba(156, 125, 69, 0.35); }
+.send-row { display: flex; justify-content: center; margin-top: 12px; }
 .seal { width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c4485b, #5e1220); box-shadow: inset 0 0 0 3px rgba(255,255,255,.15), 0 2px 4px rgba(0,0,0,.3); flex: none; }
 
 .sent { text-align: center; padding-top: 10px; }
@@ -284,7 +285,7 @@ a { color: inherit; }
 .reads .pre { color: var(--ink-soft); }
 .reads .val { font-family: var(--font-hand); font-size: 1.08em; color: var(--pen); font-weight: 700; border-bottom: 1px solid var(--gold-lo); padding: 0 0.2em; overflow-wrap: anywhere; }
 .reads .val.blank { font-weight: 400; opacity: 0.6; border-bottom-style: dashed; }
-.reads .note-line > span:last-child { font-family: var(--font-hand); color: var(--pen); }
+.reads .note-line > span:last-child { font-family: var(--font-hand); color: var(--pen); font-weight: 400; }
 .reads .note-line { margin-top: 0.8rem; padding-top: 0.6rem; border-top: 1px solid rgba(156, 125, 69, 0.35); overflow-wrap: anywhere; }
 .reads .sign { font-family: var(--font-script); font-style: italic; font-weight: 600; font-size: 2rem; color: var(--wine); text-align: right; margin-top: 10px; line-height: 1.2; }
 
@@ -403,6 +404,7 @@ a { color: inherit; }
             <button type="button" class="btn mini ghost" id="overwriteNo">改個名字</button>
           </div>
         </div>
+        <p class="final-note">請想好再寄出。<br>每個人只能寄一封，寄出後不能修改。</p>
         <div class="send-row"><button type="submit" class="btn" id="sendBtn"><span class="seal" aria-hidden="true"></span>封上蠟印，寄出</button></div>
       </form>
     </div>
@@ -729,9 +731,8 @@ async function sendWish(force) {
   btn.disabled = true;
   try {
     const key = keyOf(w.name);
-    if (!force && (await fb.getWish(key))) {
-      $("overwriteText").textContent = "「" + w.name + "」已經寫過一封信了。要用這封取代舊的嗎？";
-      $("overwrite").hidden = false;
+    if (await fb.getWish(key)) {
+      msg.textContent = "「" + w.name + "」已經寄過信了，每個人只能寄一封。如果那封不是你寫的，請換一個名字或暗號。";
       return;
     }
     await fb.setWish(key, { name: w.name, kind: w.kind, style: w.style, color: w.color, effect: w.effect, never: w.never, note: w.note, at: Date.now() });
@@ -898,11 +899,12 @@ function layoutText(lines, maxW, fs, lh, f) {
       if (!s) return;
       if (isVal && p.pre) x += gap;
       if (i === 2 && x > 0) x += gap;
-      probe.font = f(isVal ? 700 : 400, fs);
+      const k = isVal ? (p.note ? 401 : 700) : 400;
+      probe.font = f(k, fs);
       for (const ch of s) {
         const w = probe.measureText(ch).width;
         if (x + w > maxW && ch !== " ") { x = 0; y += lh; }
-        ops.push({ ch: ch, x: x, y: y, isVal: isVal, w: w });
+        ops.push({ ch: ch, x: x, y: y, isVal: isVal, k: k, w: w });
         x += w;
       }
     });
@@ -912,15 +914,15 @@ function layoutText(lines, maxW, fs, lh, f) {
 }
 async function makePng(d) {
   const lines = letterLines(d);
-  if (d.note && String(d.note).trim()) lines.push({ pre: "備注：", val: String(d.note).trim(), suf: "", blank: false });
+  if (d.note && String(d.note).trim()) lines.push({ pre: "備注：", val: String(d.note).trim(), suf: "", blank: false, note: true });
   const hand = '"LXGW WenKai TC","Kaiti TC","BiauKai","Noto Serif TC",serif';
   const sung = '"Chiron Sung HK","Noto Serif TC","Songti TC","PMingLiU",serif';
-  const f = (w, px) => (w === 700 ? "700 " + px + "px " + hand : "500 " + px + "px " + sung);
+  const f = (w, px) => (w === 700 ? "700 " + px + "px " + hand : w === 401 ? "400 " + px + "px " + hand : "500 " + px + "px " + sung);
   const script = 'italic 600 112px "Cormorant Garamond","Garamond","Times New Roman",serif';
   const sample = lines.map((l) => l.pre + l.val + l.suf).join("") + "Dear Santa, Merry Christmas";
   try {
     await Promise.race([
-      Promise.all([document.fonts.load(f(400, 46), sample), document.fonts.load(f(700, 46), sample), document.fonts.load(script, "Dear Santa, Merry Christmas"), document.fonts.load('600 30px Cinzel', "A CHRISTMAS WISH")]),
+      Promise.all([document.fonts.load(f(400, 46), sample), document.fonts.load(f(700, 46), sample), document.fonts.load(f(401, 46), sample), document.fonts.load(script, "Dear Santa, Merry Christmas"), document.fonts.load('600 30px Cinzel', "A CHRISTMAS WISH")]),
       sleep(2500),
     ]);
   } catch (e) { /* fall back to system fonts */ }
@@ -968,10 +970,10 @@ async function makePng(d) {
   g.textAlign = "left";
   g.fillStyle = "#7d1d2c"; g.font = script; g.fillText("Dear Santa,", M, 250);
   lay.ops.forEach((o) => {
-    g.font = f(o.isVal ? 700 : 400, FS);
+    g.font = f(o.k, FS);
     g.fillStyle = o.isVal ? "#1d2742" : "#5f5648";
     g.fillText(o.ch, M + o.x, top + o.y);
-    if (o.isVal) { g.fillStyle = "rgba(156,125,69,0.8)"; g.fillRect(M + o.x, top + o.y + 10, o.w, 2); }
+    if (o.isVal && o.k === 700) { g.fillStyle = "rgba(156,125,69,0.8)"; g.fillRect(M + o.x, top + o.y + 10, o.w, 2); }
   });
   g.textAlign = "center"; g.fillStyle = "#7d1d2c"; g.font = 'italic 600 88px "Cormorant Garamond","Garamond","Times New Roman",serif';
   g.fillText("Merry Christmas", W / 2, H - 130);
