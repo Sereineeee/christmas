@@ -112,7 +112,7 @@ a { color: inherit; }
   position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px;
   aspect-ratio: 3 / 3.6; padding: 18px 10px 20px; text-align: center; text-decoration: none; color: var(--fg);
   border-radius: 999px 999px 6px 6px; border: 1px solid var(--line); overflow: hidden; isolation: isolate;
-  background: linear-gradient(180deg, #1b1b22 0%, #15141a 52%, #0c0b0d 100%);
+  background: linear-gradient(180deg, #161d2b 0%, #10161f 52%, #090c13 100%);
   box-shadow: inset 0 0 0 6px rgba(8, 11, 18, 0.65), inset 0 0 0 7px rgba(217, 184, 114, 0.22), 0 30px 60px rgba(0, 0, 0, 0.5);
   transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.5s ease, border-color 0.5s ease;
   -webkit-tap-highlight-color: transparent;
@@ -120,8 +120,8 @@ a { color: inherit; }
 .door::before {
   content: ""; position: absolute; inset: 0; z-index: -1; transition: opacity 0.5s ease; opacity: 0.85;
 }
-.door-wish::before { background: radial-gradient(ellipse 70% 50% at 50% 34%, rgba(241, 200, 130, 0.42), transparent 70%), radial-gradient(ellipse 90% 22% at 50% 100%, rgba(241, 200, 130, 0.16), transparent 75%); }
-.door-santa::before { background: radial-gradient(ellipse 70% 50% at 50% 34%, rgba(150, 98, 60, 0.5), transparent 70%), radial-gradient(ellipse 90% 22% at 50% 100%, rgba(150, 98, 60, 0.2), transparent 75%); }
+.door-wish::before { background: radial-gradient(ellipse 70% 50% at 50% 34%, rgba(241, 200, 130, 0.36), transparent 66%), radial-gradient(ellipse 90% 20% at 50% 100%, rgba(241, 200, 130, 0.09), transparent 75%); }
+.door-santa::before { background: radial-gradient(ellipse 70% 50% at 50% 34%, rgba(150, 98, 60, 0.42), transparent 66%), radial-gradient(ellipse 90% 20% at 50% 100%, rgba(150, 98, 60, 0.1), transparent 75%); }
 .door:hover { transform: translateY(-6px); border-color: rgba(217, 184, 114, 0.6); }
 .door:hover::before { opacity: 1; }
 .door:active { transform: translateY(-2px); }
