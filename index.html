@@ -102,7 +102,9 @@ a { color: inherit; }
   text-shadow: 0 0 40px rgba(241, 217, 160, 0.15);
 }
 .tagline { font-family: var(--font-script); font-style: italic; font-weight: 500; font-size: 1.45rem; color: var(--fg); margin-top: 8px; letter-spacing: 0.02em; line-height: 1.35; }
-.lead { color: var(--fg-soft); max-width: 26em; margin: 14px auto 0; text-wrap: pretty; font-size: 0.95rem; }
+.lead { color: var(--fg-soft); max-width: 26em; margin: 16px auto 0; font-family: var(--font-display); font-weight: 400; font-size: 0.95rem; line-height: 1.9; letter-spacing: 0.06em; }
+.br-sm { display: none; }
+@media (max-width: 380px) { .br-sm { display: inline; } }
 
 .hero > * { animation: rise 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 .hero > :nth-child(2) { animation-delay: 0.15s; }
@@ -414,7 +416,7 @@ a { color: inherit; }
       <p class="eyebrow">Christmas · 2026</p>
       <h1>聖誕許願桌</h1>
       <p class="tagline">Write it down.<br>Someone is listening.</p>
-      <p class="lead">先寫一封信，許下想收到的禮物。再當一次聖誕老人，拆開別人的願望。</p>
+      <p class="lead">把心願寫進信裡，封上蠟，寄往冬天。<br>在初雪落下之前，<br class="br-sm">會有一位聖誕老人，輕輕拆開它。</p>
     </header>
     <nav class="doors" aria-label="選擇入口">
       <a class="door door-wish" href="#wish">
