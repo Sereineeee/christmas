@@ -196,12 +196,12 @@ a { color: inherit; }
 .ln input[type="text"]::placeholder, .block textarea::placeholder { color: rgba(34, 28, 23, 0.36); }
 .ln input[type="text"]:focus, .block textarea:focus { outline: none; border-color: var(--gold-lo); background: rgba(217, 184, 114, 0.12); }
 .block { display: block; margin-top: 6px; }
-.block > span { display: block; font-weight: 400; }
+.block > span { display: block; }
 .block textarea {
-  width: 100%; font: inherit; font-family: var(--font-display); font-weight: 400; line-height: 1.8; color: var(--pen); background: rgba(255, 255, 255, 0.3); resize: vertical;
+  width: 100%; font: inherit; font-family: var(--font-hand); font-weight: 400; line-height: 1.8; color: var(--pen); background: rgba(255, 255, 255, 0.3); resize: vertical;
   border: 1px solid rgba(156, 125, 69, 0.4); border-radius: 2px; padding: 6px 10px; min-height: 4.6rem;
 }
-.hint { font-family: var(--font-ui); font-size: 0.8rem; line-height: 1.5; color: var(--ink-soft); margin: 0 0 8px; }
+.hint { font-family: var(--font-display); font-weight: 400; font-size: 0.82rem; line-height: 1.6; letter-spacing: 0.03em; color: var(--ink-soft); margin: 0 0 8px; }
 .stamps { display: inline-flex; gap: 0.5rem; }
 .stamps input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .stamps label {
@@ -285,8 +285,7 @@ a { color: inherit; }
 .reads .pre { color: var(--ink-soft); }
 .reads .val { font-family: var(--font-hand); font-size: 1.08em; color: var(--pen); font-weight: 700; border-bottom: 1px solid var(--gold-lo); padding: 0 0.2em; overflow-wrap: anywhere; }
 .reads .val.blank { font-weight: 400; opacity: 0.6; border-bottom-style: dashed; }
-.reads .note-line, .reads .note-line > span { font-family: var(--font-display); font-weight: 400; }
-.reads .note-line > span:last-child { color: var(--pen); }
+.reads .note-line > span:last-child { font-family: var(--font-hand); color: var(--pen); font-weight: 400; }
 .reads .note-line { margin-top: 0.8rem; padding-top: 0.6rem; border-top: 1px solid rgba(156, 125, 69, 0.35); overflow-wrap: anywhere; }
 .reads .sign { font-family: var(--font-script); font-style: italic; font-weight: 600; font-size: 2rem; color: var(--wine); text-align: right; margin-top: 10px; line-height: 1.2; }
 
@@ -900,7 +899,7 @@ function layoutText(lines, maxW, fs, lh, f) {
       if (!s) return;
       if (isVal && p.pre) x += gap;
       if (i === 2 && x > 0) x += gap;
-      const k = p.note ? 401 : isVal ? 700 : 400;
+      const k = isVal ? (p.note ? 401 : 700) : 400;
       probe.font = f(k, fs);
       for (const ch of s) {
         const w = probe.measureText(ch).width;
@@ -918,7 +917,7 @@ async function makePng(d) {
   if (d.note && String(d.note).trim()) lines.push({ pre: "備注：", val: String(d.note).trim(), suf: "", blank: false, note: true });
   const hand = '"LXGW WenKai TC","Kaiti TC","BiauKai","Noto Serif TC",serif';
   const sung = '"Chiron Sung HK","Noto Serif TC","Songti TC","PMingLiU",serif';
-  const f = (w, px) => (w === 700 ? "700 " + px + "px " + hand : w === 401 ? "400 " + px + "px " + sung : "500 " + px + "px " + sung);
+  const f = (w, px) => (w === 700 ? "700 " + px + "px " + hand : w === 401 ? "400 " + px + "px " + hand : "500 " + px + "px " + sung);
   const script = 'italic 600 112px "Cormorant Garamond","Garamond","Times New Roman",serif';
   const sample = lines.map((l) => l.pre + l.val + l.suf).join("") + "Dear Santa, Merry Christmas";
   try {
