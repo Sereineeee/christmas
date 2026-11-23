@@ -216,7 +216,12 @@ a { color: inherit; }
   border: 1px solid rgba(156, 125, 69, 0.4); border-radius: 2px; padding: 6px 10px; min-height: 4.6rem;
 }
 .hint { font-family: var(--font-display); font-weight: 400; font-size: 0.82rem; line-height: 1.6; letter-spacing: 0.03em; color: var(--ink-soft); margin: 0 0 8px; }
-.stamps { display: inline-flex; gap: 0.5rem; }
+.stamps { display: inline-flex; align-items: baseline; gap: 0.5rem; }
+.stamps .slash { color: var(--ink-soft); }
+.ln-full { flex-basis: 100%; }
+.ln-pair { gap: 0 0.4rem; }
+.ln-pair input[type="text"] { flex: 1 1 4.5rem; }
+.ln-pair .dun { margin: 0 -0.15rem; }
 .stamps input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .stamps label {
   display: inline-block; padding: 0 0.95rem; line-height: 1.9; border: 1px solid var(--wine); border-radius: 999px;
@@ -414,17 +419,21 @@ a { color: inherit; }
         <label class="ln"><span>我是</span><input type="text" id="f-name" maxlength="20" placeholder="暱稱、本名或暗號"></label>
         <p class="hint">請記住這個名字，之後抽信時要用它確認身分。</p>
 
-        <div class="ln" role="radiogroup" aria-label="禮物是不是特定的物品">
-          <span>我想要收到的禮物</span>
+        <div class="ln" role="radiogroup" aria-label="我想要收到的禮物是不是特定的物品">
+          <span class="ln-full">我想要收到的禮物</span>
           <span class="stamps">
             <input type="radio" name="kind" id="k-is" value="is"><label for="k-is">是</label>
+            <span class="slash" aria-hidden="true">/</span>
             <input type="radio" name="kind" id="k-isnot" value="isnot"><label for="k-isnot">不是</label>
           </span>
           <span>特定的物品</span>
         </div>
 
-        <label class="ln"><span>我希望他是</span><input type="text" id="f-style" maxlength="40" placeholder="例：復古、北歐、毛茸茸"><span>風格</span></label>
-        <label class="ln"><span>希望他是</span><input type="text" id="f-color" maxlength="40" placeholder="例：霧藍、酒紅"><span>顏色</span></label>
+        <div class="ln ln-pair">
+          <label for="f-style">風格是</label><input type="text" id="f-style" maxlength="20" placeholder="例：復古">
+          <span class="dun" aria-hidden="true">、</span>
+          <input type="text" id="f-color" maxlength="20" placeholder="例：霧藍" aria-label="色系"><label for="f-color">色系</label>
+        </div>
         <label class="ln"><span>我希望他帶來的作用是</span><input type="text" id="f-effect" maxlength="40" placeholder="例：讓早晨沒那麼難"></label>
         <label class="ln"><span>另外，他絕對不是</span><input type="text" id="f-never" maxlength="40" placeholder="例：香氛蠟燭"></label>
 
@@ -570,18 +579,22 @@ function pickWish(wishKeys, drawMap, santaKey, r) {
   const pool = cands.filter((k) => count[k] === min);
   return { key: pool[Math.floor(r() * pool.length)], again: false };
 }
+// Each line is a list of segments: { t: text, v: is an answer, blank: answer left empty }
 function letterLines(d) {
   const kind = d.kind === "is" ? "是" : d.kind === "isnot" ? "不是" : "？";
-  const or = (v, fb) => (v && String(v).trim() ? { val: String(v).trim(), blank: false } : { val: fb, blank: true });
+  const clean = (x) => (x && String(x).trim() ? String(x).trim() : "");
+  const P = (t) => ({ t: t, v: false, blank: false });
+  const V = (x, fb) => (clean(x) ? { t: clean(x), v: true, blank: false } : { t: fb, v: true, blank: true });
+  const style = clean(d.style), color = clean(d.color);
   return [
-    Object.assign({ pre: "我是", suf: "" }, or(d.name, "（匿名）")),
-    { pre: "我想要收到的禮物", val: kind, suf: "特定的物品", blank: false },
-    Object.assign({ pre: "我希望他是", suf: "風格" }, or(d.style, "（交給你決定）")),
-    Object.assign({ pre: "希望他是", suf: "顏色" }, or(d.color, "（交給你決定）")),
-    Object.assign({ pre: "我希望他帶來的作用是", suf: "" }, or(d.effect, "（交給你決定）")),
-    Object.assign({ pre: "另外，他絕對不是", suf: "" }, or(d.never, "（沒有地雷）")),
+    [P("我是"), V(d.name, "（匿名）")],
+    [P("我想要收到的禮物"), V(kind, "？"), P("特定的物品")],
+    style || color ? [P("風格是"), V(style, "不限"), P("、"), V(color, "不限"), P("色系")] : [P("風格與色系"), V("", "（交給你決定）")],
+    [P("我希望他帶來的作用是"), V(d.effect, "（交給你決定）")],
+    [P("另外，他絕對不是"), V(d.never, "（沒有地雷）")],
   ];
 }
+const tight = (a, b) => a.t === "、" || b.t === "、";
 /*PURE-END*/
 
 /*FB-START*/
@@ -905,10 +918,12 @@ async function playMail(again) {
 function renderLetter(box, d) {
   box.textContent = "";
   box.append(el("p", "dear", "Dear Santa,"));
-  letterLines(d).forEach((l) => {
+  letterLines(d).forEach((segs) => {
     const p = el("p", "ln");
-    p.append(el("span", "pre", l.pre), " ", el("span", "val" + (l.blank ? " blank" : ""), l.val));
-    if (l.suf) p.append(" ", el("span", "pre", l.suf));
+    segs.forEach((g, i) => {
+      if (i && !tight(segs[i - 1], g)) p.append(" ");
+      p.append(el("span", g.v ? "val" + (g.blank ? " blank" : "") : "pre", g.t));
+    });
     box.append(p);
   });
   if (d.note && String(d.note).trim()) {
@@ -976,15 +991,14 @@ function layoutText(lines, maxW, fs, lh, f) {
   const ops = [];
   let y = 0;
   const gap = fs * 0.3;
-  lines.forEach((p) => {
+  lines.forEach((segs) => {
     let x = 0;
     y += lh;
-    [[p.pre, false], [p.val, true], [p.suf, false]].forEach((seg, i) => {
-      const s = seg[0], isVal = seg[1];
+    segs.forEach((g, i) => {
+      const s = g.t, isVal = g.v;
       if (!s) return;
-      if (isVal && p.pre) x += gap;
-      if (i === 2 && x > 0) x += gap;
-      const k = isVal ? (p.note ? 401 : 700) : 400;
+      if (i && x > 0 && !tight(segs[i - 1], g)) x += gap;
+      const k = isVal ? (g.note ? 401 : 700) : 400;
       probe.font = f(k, fs);
       for (const ch of s) {
         const w = probe.measureText(ch).width;
@@ -999,12 +1013,12 @@ function layoutText(lines, maxW, fs, lh, f) {
 }
 async function makePng(d) {
   const lines = letterLines(d);
-  if (d.note && String(d.note).trim()) lines.push({ pre: "備注：", val: String(d.note).trim(), suf: "", blank: false, note: true });
+  if (d.note && String(d.note).trim()) lines.push([{ t: "備注：", v: false }, { t: String(d.note).trim(), v: true, note: true }]);
   const hand = '"LXGW WenKai TC","Kaiti TC","BiauKai","Noto Serif TC",serif';
   const sung = '"Chiron Sung HK","Noto Serif TC","Songti TC","PMingLiU",serif';
   const f = (w, px) => (w === 700 ? "700 " + px + "px " + hand : w === 401 ? "400 " + px + "px " + hand : "500 " + px + "px " + sung);
   const script = 'italic 600 112px "Cormorant Garamond","Garamond","Times New Roman",serif';
-  const sample = lines.map((l) => l.pre + l.val + l.suf).join("") + "Dear Santa, Merry Christmas";
+  const sample = lines.map((segs) => segs.map((g) => g.t).join("")).join("") + "Dear Santa, Merry Christmas";
   try {
     await Promise.race([
       Promise.all([document.fonts.load(f(400, 46), sample), document.fonts.load(f(700, 46), sample), document.fonts.load(f(401, 46), sample), document.fonts.load(script, "Dear Santa, Merry Christmas"), document.fonts.load('600 30px Cinzel', "A CHRISTMAS WISH")]),
