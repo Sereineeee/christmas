@@ -615,7 +615,16 @@ function pickWish(wishKeys, drawMap, santaKey, r) {
   cands.forEach((k) => { count[k] = 0; });
   Object.keys(drawMap).forEach((s) => { const k = drawMap[s]; if (k in count) count[k]++; });
   const min = Math.min.apply(null, cands.map((k) => count[k]));
-  const pool = cands.filter((k) => count[k] === min);
+  let pool = cands.filter((k) => count[k] === min);
+  // Never leave the last person who hasn't drawn with only their own letter.
+  const claimed = new Set(Object.keys(drawMap).map((s) => drawMap[s]));
+  const waiting = wishKeys.filter((k) => k !== santaKey && !drawMap[k]);
+  if (min === 0 && waiting.length === 1) {
+    const last = waiting[0];
+    const open = wishKeys.filter((k) => !claimed.has(k));
+    const safe = pool.filter((p) => { const rest = open.filter((k) => k !== p); return !(rest.length === 1 && rest[0] === last); });
+    if (safe.length) pool = safe;
+  }
   return { key: pool[Math.floor(r() * pool.length)], again: false };
 }
 // Each line is a list of segments: { t: text, v: is an answer, blank: answer left empty }
@@ -659,28 +668,55 @@ const fb = {
 };
 // Picks a wish for santaKey. Writes the claim, then re-reads: if someone with an earlier claim holds the
 // same wish and a spare one exists, give it up and pick again. Returns null when nobody else has wished.
-async function drawFor(myKey, rnd, pause) {
-  for (let attempt = 0; attempt < 6; attempt++) {
-    const [wishes, draws] = await Promise.all([fb.allWishes(), fb.allDraws()]);
-    const drawMap = {};
-    Object.keys(draws).forEach((s) => { const v = draws[s]; if (v && v.wishKey) drawMap[s] = v.wishKey; });
-    const pick = pickWish(Object.keys(wishes), drawMap, myKey, rnd);
-    if (!pick) return null;
-    if (pick.again) return { again: true, data: wishes[pick.key] };
-    const at = Date.now();
-    await fb.setDraw(myKey, { wishKey: pick.key, at: at });
-    if (attempt === 5) return { again: false, data: wishes[pick.key] };
-    await pause(350);
-    const after = await fb.allDraws();
-    const rival = Object.keys(after).some((s) => s !== myKey && after[s] && after[s].wishKey === pick.key &&
-      (after[s].at < at || (after[s].at === at && s < myKey)));
-    if (!rival) return { again: false, data: wishes[pick.key] };
-    const taken = new Set(Object.keys(after).map((s) => after[s] && after[s].wishKey));
-    const spare = Object.keys(wishes).filter((k) => k !== myKey && !taken.has(k));
-    if (!spare.length) return { again: false, data: wishes[pick.key] };
-    await fb.delDraw(myKey);
+// Only one santa draws at a time: take a short lease on /lock, confirm it is ours, then draw.
+async function withDrawLock(now, pause, fn) {
+  const me = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  for (let i = 0; i < 80; i++) {
+    const cur = await fb.req("GET", "lock");
+    if (!cur || !cur.until || cur.until < now()) {
+      await fb.req("PUT", "lock", { holder: me, until: now() + 8000 });
+      await pause(650);
+      const chk = await fb.req("GET", "lock");
+      if (chk && chk.holder === me) {
+        try { return await fn(true); }
+        finally { try { const c2 = await fb.req("GET", "lock"); if (c2 && c2.holder === me) await fb.req("DELETE", "lock"); } catch (e) { /* lease expires anyway */ } }
+      }
+    }
+    await pause(300 + Math.random() * 500);
   }
-  return null;
+  return fn(false);
+}
+// Picks a wish for santaKey. Returns null when nobody else has wished.
+async function drawFor(myKey, rnd, pause, now) {
+  now = now || Date.now;
+  const known = await fb.allDraws();
+  if (known[myKey] && known[myKey].wishKey) {
+    const w = await fb.getWish(known[myKey].wishKey);
+    if (w) return { again: true, data: w };
+  }
+  return withDrawLock(now, pause, async (locked) => {
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const [wishes, draws] = await Promise.all([fb.allWishes(), fb.allDraws()]);
+      const drawMap = {};
+      Object.keys(draws).forEach((s) => { const v = draws[s]; if (v && v.wishKey) drawMap[s] = v.wishKey; });
+      const pick = pickWish(Object.keys(wishes), drawMap, myKey, rnd);
+      if (!pick) return null;
+      if (pick.again) return { again: true, data: wishes[pick.key] };
+      const at = Date.now();
+      await fb.setDraw(myKey, { wishKey: pick.key, at: at });
+      if (locked || attempt === 5) return { again: false, data: wishes[pick.key] };
+      await pause(350);
+      const after = await fb.allDraws();
+      const rival = Object.keys(after).some((s) => s !== myKey && after[s] && after[s].wishKey === pick.key &&
+        (after[s].at < at || (after[s].at === at && s < myKey)));
+      if (!rival) return { again: false, data: wishes[pick.key] };
+      const taken = new Set(Object.keys(after).map((s) => after[s] && after[s].wishKey));
+      const spare = Object.keys(wishes).filter((k) => k !== myKey && !taken.has(k));
+      if (!spare.length) return { again: false, data: wishes[pick.key] };
+      await fb.delDraw(myKey);
+    }
+    return null;
+  });
 }
 /*FB-END*/
 
@@ -704,7 +740,7 @@ function toast(t) {
 }
 function dbMsg(err) {
   const c = err && err.code;
-  if (c === "denied") return "信箱不讓我們讀寫。請主辦人檢查 Firebase 資料庫的規則，要是「測試模式」。";
+  if (c === "denied") return "信箱目前沒有開放，請通知主辦人。";
   if (c === "network") return "連不上信箱，請檢查網路後再試一次。";
   return "信箱暫時出了點問題，請稍後再試一次。";
 }
@@ -876,6 +912,7 @@ async function sendWish(force) {
       return;
     }
     await fb.setWish(key, { name: w.name, kind: w.kind, style: w.style, color: w.color, effect: w.effect, never: w.never, note: w.note, at: Date.now() });
+    store("xmasSanta", w.name);
     $("overwrite").hidden = true;
     playSent(w.name);
   } catch (err) {
@@ -928,6 +965,8 @@ async function startDraw() {
   const verifying = !isOpen();
   btn.disabled = true;
   btn.textContent = verifying ? "確認中…" : "馴鹿出發中…";
+  const QUEUE = "很多人同時在抽，馴鹿正在排隊，請稍等一下…";
+  const slow = setTimeout(() => { if (btn.disabled && !verifying) { msg.classList.add("ok"); msg.textContent = QUEUE; } }, 2500);
   try {
     const myKey = keyOf(name);
     if (!(await fb.getWish(myKey))) {
@@ -940,13 +979,15 @@ async function startDraw() {
       msg.textContent = "確認是你了，" + name + "。12 月 1 日凌晨 0 點開放後，回到這裡按「請馴鹿送信」就能拆信。";
       return;
     }
-    const result = await drawFor(myKey, rand, sleep);
+    const result = await drawFor(myKey, rand, sleep, nowMs);
     if (!result) { msg.textContent = "桌上還沒有其他人的信。等朋友們寫完再來吧。"; return; }
     current = result.data;
     playMail(result.again);
   } catch (err) {
     msg.textContent = dbMsg(err);
   } finally {
+    clearTimeout(slow);
+    if (msg.textContent === QUEUE) { msg.textContent = ""; msg.classList.remove("ok"); }
     if (!$("santaAsk").hidden) { btn.disabled = false; setDrawLabel(); }
   }
 }
