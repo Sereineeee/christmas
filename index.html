@@ -235,7 +235,8 @@ a { color: inherit; }
 .mini.ghost { color: var(--ink); border-color: rgba(34, 28, 23, 0.35); background: transparent; }
 .final-note { font-family: var(--font-ui); font-size: 0.85rem; line-height: 1.6; color: var(--wine); text-align: center; margin-top: 18px; padding-top: 12px; border-top: 1px solid rgba(156, 125, 69, 0.35); }
 .send-row { display: flex; justify-content: center; margin-top: 12px; }
-.seal { width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c4485b, #5e1220); box-shadow: inset 0 0 0 3px rgba(255,255,255,.15), 0 2px 4px rgba(0,0,0,.3); flex: none; }
+.wax { display: block; }
+.wax-btn { width: 30px; height: 30px; flex: none; margin: -6px 0; filter: drop-shadow(0 2px 2px rgba(40, 10, 5, 0.45)); }
 
 .sent { text-align: center; padding-top: 10px; }
 .sent h2 { font-size: 1.7rem; font-weight: 700; letter-spacing: 0.12em; margin: 6px 0 10px; color: var(--gold-hi); }
@@ -285,11 +286,11 @@ a { color: inherit; }
   transition: transform 0.6s ease, z-index 0s 0.3s;
 }
 .env .seal-wax {
-  left: 50%; top: 58%; width: 50px; height: 50px; margin: -25px 0 0 -25px; z-index: 5; border-radius: 50%;
-  display: grid; place-items: center; color: rgba(241, 217, 160, 0.9); font-family: var(--font-title); font-size: 1.1rem; font-weight: 600;
-  background: radial-gradient(circle at 35% 30%, #c4485b, #5e1220 75%); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45), inset 0 0 0 4px rgba(255, 255, 255, 0.1), inset 0 0 0 6px rgba(94, 18, 32, 0.6);
+  left: 50%; top: 58%; width: 60px; height: 60px; margin: -30px 0 0 -30px; z-index: 5;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.45));
   transition: opacity 0.3s ease 0.45s;
 }
+.env .seal-wax .wax { width: 100%; height: 100%; }
 .env.open .flap { transform: rotateX(180deg); z-index: 1; }
 .env.open .env-letter { transform: translateY(-62%); }
 .env.open .seal-wax { opacity: 0; transition-delay: 0s; }
@@ -371,6 +372,7 @@ a { color: inherit; }
 </style>
 </head>
 <body data-scene="home">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs> <radialGradient id="wax-w" cx="36%" cy="30%" r="75%"><stop offset="0" stop-color="#b9404f"/><stop offset=".5" stop-color="#7f1a29"/><stop offset="1" stop-color="#3a0710"/></radialGradient> <radialGradient id="wax-d" cx="62%" cy="66%" r="70%"><stop offset="0" stop-color="#963042"/><stop offset=".6" stop-color="#6a1221"/><stop offset="1" stop-color="#4a0a15"/></radialGradient> <radialGradient id="wax-h" cx="32%" cy="24%" r="40%"><stop offset="0" stop-color="#ffe9e4" stop-opacity=".3"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient> </defs></svg>
 <canvas id="fx" class="fx" aria-hidden="true"></canvas>
 <div class="vignette" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
@@ -449,7 +451,7 @@ a { color: inherit; }
           </div>
         </div>
         <p class="final-note">請想好再寄出。<br>每個人只能寄一封，寄出後不能修改。</p>
-        <div class="send-row"><button type="submit" class="btn" id="sendBtn"><span class="seal" aria-hidden="true"></span>封上蠟印，寄出</button></div>
+        <div class="send-row"><button type="submit" class="btn" id="sendBtn"><svg class="wax wax-btn" viewBox="0 0 64 64" aria-hidden="true">  <path d="M58.9 28.2Q59.9 32.0 59.1 35.9Q58.3 39.7 57.3 43.7Q56.4 47.7 53.1 50.1Q49.8 52.5 46.8 55.3Q43.9 58.0 40.1 60.0Q36.3 62.0 32.1 61.5Q27.8 61.0 24.0 59.5Q20.2 57.9 17.2 55.2Q14.3 52.4 11.3 49.9Q8.2 47.3 7.1 43.5Q6.0 39.6 5.4 35.8Q4.8 32.0 4.8 28.0Q4.9 24.0 6.0 20.0Q7.1 16.0 10.6 13.7Q14.1 11.4 17.0 8.4Q19.9 5.4 23.9 4.4Q27.9 3.4 32.1 2.9Q36.3 2.4 40.1 4.1Q43.9 5.9 47.2 8.3Q50.4 10.7 53.9 13.2Q57.3 15.8 57.6 20.1Q58.0 24.4 58.9 28.2Z" fill="url(#wax-w)"/> <path d="M58.9 28.2Q59.9 32.0 59.1 35.9Q58.3 39.7 57.3 43.7Q56.4 47.7 53.1 50.1Q49.8 52.5 46.8 55.3Q43.9 58.0 40.1 60.0Q36.3 62.0 32.1 61.5Q27.8 61.0 24.0 59.5Q20.2 57.9 17.2 55.2Q14.3 52.4 11.3 49.9Q8.2 47.3 7.1 43.5Q6.0 39.6 5.4 35.8Q4.8 32.0 4.8 28.0Q4.9 24.0 6.0 20.0Q7.1 16.0 10.6 13.7Q14.1 11.4 17.0 8.4Q19.9 5.4 23.9 4.4Q27.9 3.4 32.1 2.9Q36.3 2.4 40.1 4.1Q43.9 5.9 47.2 8.3Q50.4 10.7 53.9 13.2Q57.3 15.8 57.6 20.1Q58.0 24.4 58.9 28.2Z" fill="none" stroke="#3a0610" stroke-opacity=".45" stroke-width="1"/> <circle cx="32" cy="32" r="20.5" fill="#5e0e1c" opacity=".55"/> <circle cx="32" cy="32" r="19.5" fill="url(#wax-d)"/> <path d="M17.8 26.5A15.5 15.5 0 0 1 41 17.5" fill="none" stroke="#2b030b" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/> <path d="M46.2 37.5A15.5 15.5 0 0 1 23 46.5" fill="none" stroke="#ffd2cf" stroke-opacity=".16" stroke-width="1.4" stroke-linecap="round"/> <circle cx="32" cy="32" r="16.2" fill="none" stroke="#ffd9d2" stroke-opacity=".32" stroke-width=".9" stroke-dasharray=".1 2.6" stroke-linecap="round"/> <path d="M32.00 21.50L34.55 29.45L42.50 32.00L34.55 34.55L32.00 42.50L29.45 34.55L21.50 32.00L29.45 29.45Z" transform="translate(.7 .8)" fill="#ffd9d2" fill-opacity=".3"/> <path d="M32.00 21.50L34.55 29.45L42.50 32.00L34.55 34.55L32.00 42.50L29.45 34.55L21.50 32.00L29.45 29.45Z" fill="#3d0711" fill-opacity=".62"/> <path d="M32.00 25.50L33.84 30.16L38.50 32.00L33.84 33.84L32.00 38.50L30.16 33.84L25.50 32.00L30.16 30.16Z" transform="rotate(45 32 32)" fill="#3d0711" fill-opacity=".4"/> <path d="M58.9 28.2Q59.9 32.0 59.1 35.9Q58.3 39.7 57.3 43.7Q56.4 47.7 53.1 50.1Q49.8 52.5 46.8 55.3Q43.9 58.0 40.1 60.0Q36.3 62.0 32.1 61.5Q27.8 61.0 24.0 59.5Q20.2 57.9 17.2 55.2Q14.3 52.4 11.3 49.9Q8.2 47.3 7.1 43.5Q6.0 39.6 5.4 35.8Q4.8 32.0 4.8 28.0Q4.9 24.0 6.0 20.0Q7.1 16.0 10.6 13.7Q14.1 11.4 17.0 8.4Q19.9 5.4 23.9 4.4Q27.9 3.4 32.1 2.9Q36.3 2.4 40.1 4.1Q43.9 5.9 47.2 8.3Q50.4 10.7 53.9 13.2Q57.3 15.8 57.6 20.1Q58.0 24.4 58.9 28.2Z" fill="url(#wax-h)"/> <ellipse cx="21" cy="17" rx="5" ry="2.4" transform="rotate(-32 21 17)" fill="#fff" fill-opacity=".2"/> </svg>封上蠟印，寄出</button></div>
       </form>
     </div>
 
@@ -670,7 +672,7 @@ function dbMsg(err) {
   return "信箱暫時出了點問題，請稍後再試一次。";
 }
 function envHTML() {
-  return '<div class="env"><div class="env-back"></div><div class="env-letter"></div><div class="env-front"></div><div class="flap"></div><div class="seal-wax" aria-hidden="true">S</div></div>';
+  return '<div class="env"><div class="env-back"></div><div class="env-letter"></div><div class="env-front"></div><div class="flap"></div><div class="seal-wax" aria-hidden="true"><svg class="wax" viewBox="0 0 64 64" aria-hidden="true">  <path d="M58.9 28.2Q59.9 32.0 59.1 35.9Q58.3 39.7 57.3 43.7Q56.4 47.7 53.1 50.1Q49.8 52.5 46.8 55.3Q43.9 58.0 40.1 60.0Q36.3 62.0 32.1 61.5Q27.8 61.0 24.0 59.5Q20.2 57.9 17.2 55.2Q14.3 52.4 11.3 49.9Q8.2 47.3 7.1 43.5Q6.0 39.6 5.4 35.8Q4.8 32.0 4.8 28.0Q4.9 24.0 6.0 20.0Q7.1 16.0 10.6 13.7Q14.1 11.4 17.0 8.4Q19.9 5.4 23.9 4.4Q27.9 3.4 32.1 2.9Q36.3 2.4 40.1 4.1Q43.9 5.9 47.2 8.3Q50.4 10.7 53.9 13.2Q57.3 15.8 57.6 20.1Q58.0 24.4 58.9 28.2Z" fill="url(#wax-w)"/> <path d="M58.9 28.2Q59.9 32.0 59.1 35.9Q58.3 39.7 57.3 43.7Q56.4 47.7 53.1 50.1Q49.8 52.5 46.8 55.3Q43.9 58.0 40.1 60.0Q36.3 62.0 32.1 61.5Q27.8 61.0 24.0 59.5Q20.2 57.9 17.2 55.2Q14.3 52.4 11.3 49.9Q8.2 47.3 7.1 43.5Q6.0 39.6 5.4 35.8Q4.8 32.0 4.8 28.0Q4.9 24.0 6.0 20.0Q7.1 16.0 10.6 13.7Q14.1 11.4 17.0 8.4Q19.9 5.4 23.9 4.4Q27.9 3.4 32.1 2.9Q36.3 2.4 40.1 4.1Q43.9 5.9 47.2 8.3Q50.4 10.7 53.9 13.2Q57.3 15.8 57.6 20.1Q58.0 24.4 58.9 28.2Z" fill="none" stroke="#3a0610" stroke-opacity=".45" stroke-width="1"/> <circle cx="32" cy="32" r="20.5" fill="#5e0e1c" opacity=".55"/> <circle cx="32" cy="32" r="19.5" fill="url(#wax-d)"/> <path d="M17.8 26.5A15.5 15.5 0 0 1 41 17.5" fill="none" stroke="#2b030b" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/> <path d="M46.2 37.5A15.5 15.5 0 0 1 23 46.5" fill="none" stroke="#ffd2cf" stroke-opacity=".16" stroke-width="1.4" stroke-linecap="round"/> <circle cx="32" cy="32" r="16.2" fill="none" stroke="#ffd9d2" stroke-opacity=".32" stroke-width=".9" stroke-dasharray=".1 2.6" stroke-linecap="round"/> <path d="M32.00 21.50L34.55 29.45L42.50 32.00L34.55 34.55L32.00 42.50L29.45 34.55L21.50 32.00L29.45 29.45Z" transform="translate(.7 .8)" fill="#ffd9d2" fill-opacity=".3"/> <path d="M32.00 21.50L34.55 29.45L42.50 32.00L34.55 34.55L32.00 42.50L29.45 34.55L21.50 32.00L29.45 29.45Z" fill="#3d0711" fill-opacity=".62"/> <path d="M32.00 25.50L33.84 30.16L38.50 32.00L33.84 33.84L32.00 38.50L30.16 33.84L25.50 32.00L30.16 30.16Z" transform="rotate(45 32 32)" fill="#3d0711" fill-opacity=".4"/> <path d="M58.9 28.2Q59.9 32.0 59.1 35.9Q58.3 39.7 57.3 43.7Q56.4 47.7 53.1 50.1Q49.8 52.5 46.8 55.3Q43.9 58.0 40.1 60.0Q36.3 62.0 32.1 61.5Q27.8 61.0 24.0 59.5Q20.2 57.9 17.2 55.2Q14.3 52.4 11.3 49.9Q8.2 47.3 7.1 43.5Q6.0 39.6 5.4 35.8Q4.8 32.0 4.8 28.0Q4.9 24.0 6.0 20.0Q7.1 16.0 10.6 13.7Q14.1 11.4 17.0 8.4Q19.9 5.4 23.9 4.4Q27.9 3.4 32.1 2.9Q36.3 2.4 40.1 4.1Q43.9 5.9 47.2 8.3Q50.4 10.7 53.9 13.2Q57.3 15.8 57.6 20.1Q58.0 24.4 58.9 28.2Z" fill="url(#wax-h)"/> <ellipse cx="21" cy="17" rx="5" ry="2.4" transform="rotate(-32 21 17)" fill="#fff" fill-opacity=".2"/> </svg></div></div>';
 }
 function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* private mode */ } }
 function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
