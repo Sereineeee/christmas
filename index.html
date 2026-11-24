@@ -490,10 +490,10 @@ a { color: inherit; }
       <h2>信寄出去了</h2>
       <p>聖誕老人會在抽信時收到它。你的名字是</p>
       <p class="namecard" id="sentName"></p>
-      <p>之後到「I am Santa」輸入這個名字，就能拆別人的信，而且不會抽到自己的。</p>
+      <p id="sentHint">之後到「I am Santa」輸入這個名字，就能拆別人的信，而且不會抽到自己的。</p>
       <div class="actions">
-        <a class="btn" href="#santa">去當聖誕老人</a>
-        <a class="btn ghost" href="#home">回到入口</a>
+        <a class="btn" id="goSanta" href="#santa" hidden>去當聖誕老人</a>
+        <a class="btn" id="goHome" href="#home">回到首頁</a>
       </div>
     </div>
   </section>
@@ -927,6 +927,12 @@ async function playSent(name) {
   sentShown = true;
   $("wishPaper").hidden = true;
   $("sentName").textContent = name;
+  const open = isOpen();
+  $("goSanta").hidden = !open;
+  $("goHome").className = open ? "btn ghost" : "btn";
+  $("sentHint").textContent = open
+    ? "現在就可以到「I am Santa」輸入這個名字，拆一封別人的信，而且不會抽到自己的。"
+    : "12 月 1 日凌晨 0 點開放後，到「I am Santa」輸入這個名字，就能拆一封別人的信，而且不會抽到自己的。";
   const stage = $("sentStage");
   stage.innerHTML = '<div class="env-wrap">' + envHTML() + "</div>";
   const wrap = stage.firstChild, env = wrap.firstChild;
